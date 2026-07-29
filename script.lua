@@ -1,5 +1,5 @@
 -- ===============================================================
--- TSUO HUB - SCRIPT COMPLETO (VERSÃO PT-BR)
+-- TSUO HUB - SCRIPT COMPLETO (VERSÃO PT-BR CORRIGIDA)
 -- Feito para Grow a Garden (Roblox)
 -- ===============================================================
 
@@ -9,7 +9,7 @@ if _G.TsuoHubLoaded then
 end
 _G.TsuoHubLoaded = true
 
-local VERSION = "1.2.3"
+local VERSION = "1.2.4"
 
 ---------------------------------------------------------------
 -- CONFIGURAÇÕES GLOBAIS
@@ -18,12 +18,11 @@ local VERSION = "1.2.3"
 local Config = {
     UI = {
         Title = "TSUO HUB",
-        -- ID do ícone de dragão no Roblox (exemplo de asset válido para ícone)
         Icon = 6034510, 
     },
     Timings = {
         HarvestInterval = 2,
-        SellInterval = 5,
+        SellInterval = 3, -- Intervalo otimizado para vender mais rápido
         WaterInterval = 3,
         PlantInterval = 2,
         RestockPollInterval = 1,
@@ -54,7 +53,7 @@ local Config = {
         TargetGears = {},
     },
     Sell = {
-        AutoSell = false,
+        AutoSell = true,
     },
     Pet = {
         MinRarity = "Rare",
@@ -134,18 +133,6 @@ local Resources = {
         "Rare Sprinkler","Gnome","Basic Pot","Legendary Sprinkler",
         "Super Watering Can","Super Sprinkler","Wheelbarrow",
     },
-    GearPrices = {
-        ["Trowel"] = 100,
-        ["Speed Mushroom"] = 150,
-        ["Common Watering Can"] = 50,
-        ["Common Sprinkler"] = 500,
-        ["Sign"] = 75,
-        ["Lantern"] = 250,
-        ["Basic Pot"] = 200,
-        ["Super Watering Can"] = 1500,
-        ["Super Sprinkler"] = 5000,
-        ["Wheelbarrow"] = 2500,
-    }
 }
 
 ---------------------------------------------------------------
@@ -339,7 +326,7 @@ do
     local M = Modules.AutoHarvest
     M._running = false
     M._thread = nil
-    M._stats = { harvested = 0, errors = 0 }
+    M._stats = { harvested = 0 }
 
     function M.start(config, Net, Utils)
         if M._running then return end
@@ -371,15 +358,12 @@ do
         end)
     end
 
-    function M.stop()
-        M._running = false
-    end
-
+    function M.stop() M._running = false end
     function M.getStats() return M._stats end
 end
 
 ---------------------------------------------------------------
--- MÓDULO: AUTO SELL (Venda Automática)
+-- MÓDULO: AUTO SELL (Venda Automática Corrigida)
 ---------------------------------------------------------------
 Modules.AutoSell = {}
 do
@@ -391,18 +375,33 @@ do
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
-        local interval = config.Timings.SellInterval or 5
+        local interval = config.Timings.SellInterval or 3
 
         M._thread = task.spawn(function()
             while M._running do
                 pcall(function()
                     local lp = Utils.getLocalPlayer()
-                    local backpack = lp and lp:FindFirstChild("Backpack")
-                    if backpack then
-                        for _, tool in ipairs(backpack:GetChildren()) do
-                            if tool:IsA("Tool") and (tool:GetAttribute("FruitName") or tool:GetAttribute("IsFruit")) then
-                                Net.fire("NPCS.SellItem", tool)
-                                M._stats.sold += 1
+                    local containers = {lp:FindFirstChild("Backpack"), lp.Character}
+                    
+                    for _, container in ipairs(containers) do
+                        if container then
+                            for _, item in ipairs(container:GetChildren()) do
+                                if item:IsA("Tool") then
+                                    -- Verifica por atributos ou se está na lista de frutas conhecidas
+                                    local isFruitLike = item:GetAttribute("FruitName") 
+                                        or item:GetAttribute("IsFruit") 
+                                        or item:GetAttribute("Value") 
+                                        or item:GetAttribute("Price")
+                                        or not table.find(Resources.AllGears, item.Name) -- Garante que não é uma ferramenta de uso (regador, etc)
+
+                                    if isFruitLike then
+                                        -- Tenta diferentes caminhos comuns de Remote para venda no jogo
+                                        Net.fire("NPCS.SellItem", item)
+                                        Net.fire("SellItem", item)
+                                        Net.fire("Shop.SellItem", item)
+                                        M._stats.sold += 1
+                                    end
+                                end
                             end
                         end
                     end
@@ -531,14 +530,11 @@ do
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
-        
-        local conn = Net.on("Mutation.Detected", function(mutationName)
+        M._conn = Net.on("Mutation.Detected", function(mutationName)
             M._stats.tracked += 1
             M._stats.alerts += 1
             Config.Notify("🧬 Mutação Detectada!", "Mutação encontrada: " .. tostring(mutationName), 8)
         end)
-        
-        M._conn = conn
     end
 
     function M.stop()
@@ -560,7 +556,6 @@ do
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
-        
         M._conn = Net.on("Weather.Changed", function(weatherName)
             M._stats.events += 1
             Config.Notify("🌦️ Mudança de Clima", "Clima atual: " .. tostring(weatherName), 10)
@@ -575,7 +570,7 @@ do
 end
 
 ---------------------------------------------------------------
--- MÓDULO: STEAL BOT (Modo Roubo)
+-- MÓDULO: STEAL BOT
 ---------------------------------------------------------------
 Modules.StealBot = {}
 do
@@ -586,7 +581,6 @@ do
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
-
         M._thread = task.spawn(function()
             while M._running do
                 pcall(function()
@@ -615,7 +609,6 @@ do
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
-
         M._thread = task.spawn(function()
             while M._running do
                 pcall(function()
@@ -629,42 +622,6 @@ do
 
     function M.stop() M._running = false end
     function M.getStats() return M._stats end
-end
-
----------------------------------------------------------------
--- MÓDULO: INVENTORY OPTIMIZER
----------------------------------------------------------------
-Modules.InventoryOptimizer = {}
-do
-    local M = Modules.InventoryOptimizer
-    M._running = false
-    function M.start(config, Net, Utils) if M._running then return end M._running = true end
-    function M.stop() M._running = false end
-    function M.getStats() return { optimized = 0 } end
-end
-
----------------------------------------------------------------
--- MÓDULO: GEAR BUYER
----------------------------------------------------------------
-Modules.GearBuyer = {}
-do
-    local M = Modules.GearBuyer
-    M._running = false
-    function M.start(config, Net, Utils) if M._running then return end M._running = true end
-    function M.stop() M._running = false end
-    function M.getStats() return { bought = 0 } end
-end
-
----------------------------------------------------------------
--- MÓDULO: SEED PACK CLAIMER
----------------------------------------------------------------
-Modules.SeedPackClaimer = {}
-do
-    local M = Modules.SeedPackClaimer
-    M._running = false
-    function M.start(config, Net, Utils) if M._running then return end M._running = true end
-    function M.stop() M._running = false end
-    function M.getStats() return { claimed = 0 } end
 end
 
 ---------------------------------------------------------------
@@ -683,40 +640,6 @@ do
     end
     function M.stop() M._running = false end
     function M.getStats() return { teleports = 0 } end
-end
-
----------------------------------------------------------------
--- MÓDULO: AUTO PET CATCH
----------------------------------------------------------------
-Modules.AutoPetCatch = {}
-do
-    local M = Modules.AutoPetCatch
-    M._running = false
-    function M.start(config, Net, Utils) if M._running then return end M._running = true end
-    function M.stop() M._running = false end
-    function M.getStats() return { caught = 0 } end
-end
-
----------------------------------------------------------------
--- MÓDULO: AUTO CENTER PLOT
----------------------------------------------------------------
-Modules.AutoCenterPlot = {}
-do
-    local M = Modules.AutoCenterPlot
-    M._running = false
-    function M.start(config, Net, Utils)
-        if M._running then return end
-        M._running = true
-        task.spawn(function()
-            local hrp = Utils.getHumanoidRootPart()
-            local garden = Utils.getMyGarden()
-            if hrp and garden then
-                hrp.CFrame = garden:GetPivot() + Vector3.new(0, 5, 0)
-            end
-            M._running = false
-        end)
-    end
-    function M.stop() M._running = false end
 end
 
 ---------------------------------------------------------------
@@ -757,7 +680,7 @@ function Stats.buildText()
 end
 
 ---------------------------------------------------------------
--- INTERFACE GRÁFICA (RAYFIELD UI COM ÍCONE DE DRAGÃO E TSUO HUB)
+-- INTERFACE GRÁFICA (RAYFIELD UI)
 ---------------------------------------------------------------
 
 local function createUI()
@@ -781,9 +704,7 @@ local function createUI()
         KeySystem = false,
     })
 
-    -------------------------------------------------------
-    -- ABA 1: AGRICULTURA (Farming)
-    -------------------------------------------------------
+    -- ABA 1: AGRICULTURA
     local FarmTab = Window:CreateTab("Agricultura", 6034510)
 
     FarmTab:CreateSection("⚡ Módulos Automáticos")
@@ -798,9 +719,7 @@ local function createUI()
     FarmTab:CreateSlider({Name = "Rega", Range = {1, 15}, Increment = 1, Suffix = "s", CurrentValue = Config.Timings.WaterInterval, Callback = function(v) Config.Timings.WaterInterval = v end})
     FarmTab:CreateSlider({Name = "Plantio", Range = {1, 15}, Increment = 1, Suffix = "s", CurrentValue = Config.Timings.PlantInterval, Callback = function(v) Config.Timings.PlantInterval = v end})
 
-    -------------------------------------------------------
-    -- ABA 2: LOJA E PETS (Shop & Pets)
-    -------------------------------------------------------
+    -- ABA 2: LOJA E PETS
     local ShopTab = Window:CreateTab("Loja & Pets", 6031790)
 
     ShopTab:CreateSection("🎯 Sniper de Restoque")
@@ -811,9 +730,7 @@ local function createUI()
     ShopTab:CreateToggle({Name = "Auto Abrir Ovos", CurrentValue = false, Flag = "AutoBuyPet", Callback = function(v) if v then startModule("AutoBuyPet") else stopModule("AutoBuyPet") end end})
     ShopTab:CreateDropdown({Name = "Raridade Mínima", Options = {"Common", "Uncommon", "Rare", "Legendary", "Mythic", "Super"}, CurrentOption = {Config.Pet.MinRarity}, MultipleOptions = false, Callback = function(opt) Config.Pet.MinRarity = type(opt) == "table" and opt[1] or opt end})
 
-    -------------------------------------------------------
-    -- ABA 3: EVENTOS (Events)
-    -------------------------------------------------------
+    -- ABA 3: EVENTOS
     local EventTab = Window:CreateTab("Eventos", 6035974)
 
     EventTab:CreateSection("🧬 Mutações & Clima")
@@ -823,9 +740,7 @@ local function createUI()
     EventTab:CreateSection("🌙 Roubo Automático (Steal Bot)")
     EventTab:CreateToggle({Name = "Ativar Roubo à Noite", CurrentValue = false, Flag = "StealBot", Callback = function(v) if v then startModule("StealBot") else stopModule("StealBot") end end})
 
-    -------------------------------------------------------
-    -- ABA 4: SERVIDOR (Server)
-    -------------------------------------------------------
+    -- ABA 4: SERVIDOR
     local ServerTab = Window:CreateTab("Servidor", 6035172)
 
     ServerTab:CreateSection("🚀 Conexão Direta")
@@ -843,9 +758,7 @@ local function createUI()
         end
     })
 
-    -------------------------------------------------------
-    -- ABA 5: STATUS E CONTROLE (Status)
-    -------------------------------------------------------
+    -- ABA 5: STATUS
     local StatusTab = Window:CreateTab("Status", 6030690)
 
     StatusTab:CreateSection("📊 Estatísticas ao Vivo")
@@ -857,14 +770,13 @@ local function createUI()
     StatusTab:CreateSection("🎮 Painel de Controle Global")
     StatusTab:CreateButton({Name = "✅ Ativar Tudo", Callback = function()
         for n in pairs(Modules) do startModule(n) end
-        Rayfield:Notify({Title = "TSUO Hub", Content = "Todos os módulos foram ativados!", Duration = 3})
+        Rayfield:Notify({Title = "TSUO HUB", Content = "Todos os módulos foram ativados!", Duration = 3})
     end})
     StatusTab:CreateButton({Name = "❌ Desativar Tudo", Callback = function()
         for n in pairs(Modules) do stopModule(n) end
-        Rayfield:Notify({Title = "TSUO Hub", Content = "Todos os módulos foram desativados!", Duration = 3})
+        Rayfield:Notify({Title = "TSUO HUB", Content = "Todos os módulos foram desativados!", Duration = 3})
     end})
 
-    -- Loop de atualização automática das estatísticas
     task.spawn(function()
         while true do
             pcall(function()
@@ -890,8 +802,6 @@ _G.TsuoHub = {
     toggle = toggleModule,
     start = startModule,
     stop = stopModule,
-    enableAll = function() for n in pairs(Modules) do startModule(n) end end,
-    disableAll = function() for n in pairs(Modules) do stopModule(n) end end,
 }
 
 local LP = Utils.getLocalPlayer()
@@ -905,7 +815,6 @@ task.spawn(function()
     end)
 end)
 
--- Inicializa a Interface
 task.spawn(createUI)
-Config.Notify("TSUO Hub Carregado!", "Painel renomeado e traduzido para PT-BR com sucesso!", 5)
-print("[TSUO Hub] Carregado com sucesso! Use _G.TsuoHub no console se necessário.")
+Config.Notify("TSUO HUB Carregado!", "Auto Venda corrigido e atualizado com sucesso!", 5)
+print("[TSUO HUB] Carregado com sucesso!")

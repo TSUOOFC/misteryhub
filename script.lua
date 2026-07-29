@@ -261,7 +261,7 @@ do
     end
 
     function Utils.formatNumber(n)
-        if not n return "0" end
+        if not n then return "0" end
         if n >= 1e9 then
             return string.format("%.2fB", n / 1e9)
         elseif n >= 1e6 then
@@ -357,7 +357,7 @@ do
                                     local prompt = fruit:FindFirstChildWhichIsA("ProximityPrompt", true)
                                     if prompt then
                                         fireproximityprompt(prompt)
-                                        M._stats.harvested += 1
+                                        M._stats.harvested = M._stats.harvested + 1
                                     end
                                 end
                             end
@@ -400,7 +400,7 @@ do
                         for _, tool in ipairs(backpack:GetChildren()) do
                             if tool:IsA("Tool") and (tool:GetAttribute("FruitName") or tool:GetAttribute("IsFruit")) then
                                 Net.fire("NPCS.SellItem", tool)
-                                M._stats.sold += 1
+                                M._stats.sold = M._stats.sold + 1
                             end
                         end
                     end
@@ -437,7 +437,7 @@ do
                             local info = Utils.getPlantInfo(plant)
                             if info and not info.Watered then
                                 Net.fire("Plants.WaterPlant", plant)
-                                M._stats.watered += 1
+                                M._stats.watered = M._stats.watered + 1
                             end
                         end
                     end
@@ -472,9 +472,8 @@ do
                     if garden then
                         local area = garden:FindFirstChild("PlantArea")
                         if area then
-                            -- Lógica simplificada de plantio automatizado
                             Net.fire("Plants.PlantSeed", "Carrot", area.Position)
-                            M._stats.planted += 1
+                            M._stats.planted = M._stats.planted + 1
                         end
                     end
                 end)
@@ -506,7 +505,7 @@ do
                 pcall(function()
                     for _, seedName in ipairs(config.Restock.TargetSeeds or {}) do
                         Net.fire("SeedShop.BuySeed", seedName, 1)
-                        M._stats.bought += 1
+                        M._stats.bought = M._stats.bought + 1
                     end
                 end)
                 task.wait(interval)
@@ -532,8 +531,8 @@ do
         M._running = true
         
         local conn = Net.on("Mutation.Detected", function(mutationName)
-            M._stats.tracked += 1
-            M._stats.alerts += 1
+            M._stats.tracked = M._stats.tracked + 1
+            M._stats.alerts = M._stats.alerts + 1
             Config.Notify("🧬 Mutação Detectada!", "Mutação encontrada: " .. tostring(mutationName), 8)
         end)
         
@@ -561,7 +560,7 @@ do
         M._running = true
         
         M._conn = Net.on("Weather.Changed", function(weatherName)
-            M._stats.events += 1
+            M._stats.events = M._stats.events + 1
             Config.Notify("🌦️ Mudança de Clima", "Clima atual: " .. tostring(weatherName), 10)
         end)
     end
@@ -590,8 +589,7 @@ do
             while M._running do
                 pcall(function()
                     if Utils.isNight() then
-                        -- Executa lógica de furto se estiver de noite
-                        M._stats.stolen += 1
+                        M._stats.stolen = M._stats.stolen + 1
                     end
                 end)
                 task.wait(config.Timings.StealInterval or 1.5)
@@ -620,7 +618,7 @@ do
             while M._running do
                 pcall(function()
                     Net.fire("Egg.OpenEgg", "Basic Egg")
-                    M._stats.hatched += 1
+                    M._stats.hatched = M._stats.hatched + 1
                 end)
                 task.wait(config.Timings.PetHatchInterval or 2)
             end
@@ -797,7 +795,7 @@ local function createUI()
     Stats.init()
 
     local Window = Rayfield:CreateWindow({
-        Name = "🌿 " .. Config.UI.Title + " v" .. VERSION,
+        Name = "🌿 " .. Config.UI.Title .. " v" .. VERSION,
         LoadingTitle = "Carregando GAG Hub...",
         LoadingSubtitle = "por Brave (Tradução PT-BR)",
         ConfigurationSaving = { Enabled = true, FolderName = "GAGHub", FileName = "config_pt" },
@@ -888,7 +886,6 @@ local function createUI()
         Rayfield:Notify({Title = "GAG Hub", Content = "Todos os módulos foram desativados!", Duration = 3})
     end})
 
-    -- Loop de atualização automática das estatísticas
     task.spawn(function()
         while true do
             pcall(function()
@@ -920,7 +917,6 @@ _G.GAGHub = {
 
 local LP = Utils.getLocalPlayer()
 
--- Sistema Anti-AFK
 task.spawn(function()
     local VirtualUser = game:GetService("VirtualUser")
     LP.Idled:Connect(function()
@@ -929,7 +925,6 @@ task.spawn(function()
     end)
 end)
 
--- Inicializa a Interface
 task.spawn(createUI)
 Config.Notify("GAG Hub Carregado!", "Painel totalmente traduzido para PT-BR.", 5)
 print("[GAG Hub] Carregado com sucesso! Use _G.GAGHub no console se necessário.")

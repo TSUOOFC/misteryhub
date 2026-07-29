@@ -1,265 +1,143 @@
-local player = game:GetService("Players").LocalPlayer
-local playerGui = player:WaitForChild("PlayerGui")
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+local VirtualUser = game:GetService("VirtualUser")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
 
-if playerGui:FindFirstChild("MisteryHubGui") then
-    playerGui.MisteryHubGui:Destroy()
+if PlayerGui:FindFirstChild("MisteryHubGAG2") then
+    PlayerGui.MisteryHubGAG2:Destroy()
 end
 
-local sg = Instance.new("ScreenGui")
-sg.Name = "MisteryHubGui"
-sg.ResetOnSpawn = false
-sg.ZIndexBehavior = Enum.ZIndexBehavior.Global
-sg.Parent = playerGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "MisteryHubGAG2"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Global
+ScreenGui.Parent = PlayerGui
 
-local main = Instance.new("Frame")
-main.Size = UDim2.new(0, 320, 0, 250)
-main.Position = UDim2.new(0.5, -160, 0.5, -125)
-main.BackgroundColor3 = Color3.fromRGB(24, 24, 27)
-main.BorderSizePixel = 1
-main.BorderColor3 = Color3.fromRGB(34, 197, 94)
-main.Active = true
-main.Draggable = true
-main.Parent = sg
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 360, 0, 290)
+MainFrame.Position = UDim2.new(0.5, -180, 0.5, -145)
+MainFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 20)
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.Parent = ScreenGui
 
-local uicMain = Instance.new("UICorner")
-uicMain.CornerRadius = UDim.new(0, 8)
-uicMain.Parent = main
+local UICornerMain = Instance.new("UICorner")
+UICornerMain.CornerRadius = UDim.new(0, 12)
+UICornerMain.Parent = MainFrame
 
-local sidebar = Instance.new("Frame")
-sidebar.Size = UDim2.new(0, 65, 1, 0)
-sidebar.BackgroundColor3 = Color3.fromRGB(18, 18, 20)
-sidebar.BorderSizePixel = 0
-sidebar.Parent = main
+local UIStrokeMain = Instance.new("UIStroke")
+UIStrokeMain.Color = Color3.fromRGB(147, 51, 234)
+UIStrokeMain.Thickness = 2
+UIStrokeMain.Parent = MainFrame
 
-local uicSide = Instance.new("UICorner")
-uicSide.CornerRadius = UDim.new(0, 8)
-uicSide.Parent = sidebar
+local TopBar = Instance.new("Frame")
+TopBar.Size = UDim2.new(1, 0, 0, 42)
+TopBar.BackgroundColor3 = Color3.fromRGB(22, 22, 30)
+TopBar.BorderSizePixel = 0
+TopBar.Parent = MainFrame
 
-local logo = Instance.new("TextLabel")
-logo.Size = UDim2.new(1, 0, 0, 40)
-logo.Text = "MH"
-logo.TextColor3 = Color3.fromRGB(34, 197, 94)
-logo.Font = Enum.Font.SourceSansBold
-logo.TextSize = 20
-logo.BackgroundTransparency = 1
-logo.Parent = sidebar
+local UICornerTop = Instance.new("UICorner")
+UICornerTop.CornerRadius = UDim.new(0, 12)
+UICornerTop.Parent = TopBar
 
-local tabContainer = Instance.new("Frame")
-tabContainer.Size = UDim2.new(1, 0, 1, -40)
-tabContainer.Position = UDim2.new(0, 0, 0, 40)
-tabContainer.BackgroundTransparency = 1
-tabContainer.Parent = sidebar
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -15, 1, 0)
+Title.Position = UDim2.new(0, 14, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "🌸 Mistery Hub | Grow a Garden 2"
+Title.TextColor3 = Color3.fromRGB(216, 180, 254)
+Title.Font = Enum.Font.GothamBold
+Title.TextSize = 14
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Parent = TopBar
 
-local tabLayout = Instance.new("UIListLayout")
-tabLayout.Padding = UDim.new(0, 5)
-tabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-tabLayout.Parent = tabContainer
+local Content = Instance.new("ScrollingFrame")
+Content.Size = UDim2.new(1, -16, 1, -55)
+Content.Position = UDim2.new(0, 8, 0, 50)
+Content.BackgroundTransparency = 1
+Content.CanvasSize = UDim2.new(0, 0, 0, 0)
+Content.AutomaticCanvasSize = Enum.AutomaticSize.Y
+Content.ScrollBarThickness = 3
+Content.Parent = MainFrame
 
-local contentFrame = Instance.new("Frame")
-contentFrame.Size = UDim2.new(1, -75, 1, -10)
-contentFrame.Position = UDim2.new(0, 70, 0, 5)
-contentFrame.BackgroundTransparency = 1
-contentFrame.Parent = main
+local UIList = Instance.new("UIListLayout")
+UIList.Padding = UDim.new(0, 8)
+UIList.HorizontalAlignment = Enum.HorizontalAlignment.Center
+UIList.Parent = Content
 
-local Estado = {
-    FarmAtivo = false,
-    TeleportAtivo = true,
-    RegarAtivo = false,
-    SprinklerAtivo = false,
-    PetAtivo = false,
-    AfkAtivo = false,
-    SegundosIntervalo = 1.0,
-    PlantaAlvo = "",
-    TempoRestanteSprinkler = 0.0,
-    AbaAberta = "Inicio"
+local Configs = {
+    AutoFarm = false,
+    AutoWater = false,
+    AutoSell = false,
+    AutoPet = false,
+    AutoAfk = false,
+    Delay = 0.15
 }
 
-local Paginas = {}
-
-local function criarPagina(nome)
-    local pf = Instance.new("ScrollingFrame")
-    pf.Size = UDim2.new(1, 0, 1, 0)
-    pf.BackgroundTransparency = 1
-    pf.CanvasSize = UDim2.new(0, 0, 0, 0)
-    pf.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    pf.ScrollBarThickness = 3
-    pf.ScrollBarImageColor3 = Color3.fromRGB(63, 63, 70)
-    pf.Visible = (nome == Estado.AbaAberta)
-    pf.Parent = contentFrame
-    
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 6)
-    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    layout.SortOrder = Enum.SortOrder.LayoutOrder
-    layout.Parent = pf
-    
-    local pad = Instance.new("UIPadding")
-    pad.PaddingTop = UDim.new(0, 5)
-    pad.Parent = pf
-    
-    Paginas[nome] = pf
-    return pf
-end
-
-local pInicio = criarPagina("Inicio")
-local pFarm = criarPagina("Farm")
-local pUtils = criarPagina("Utils")
-
-local function alternarAba(nomeAba)
-    Estado.AbaAberta = nomeAba
-    for nome, pag in pairs(Paginas) do
-        pag.Visible = (nome == nomeAba)
-    end
-end
-
-local function criarBotaoAba(texto, nomeAba)
+local function CriarBotao(texto, estadoKey)
     local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0, 55, 0, 30)
-    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 35)
-    btn.Text = texto
-    btn.TextColor3 = Color3.fromRGB(200, 200, 200)
-    btn.Font = Enum.Font.SourceSansBold
-    btn.TextSize = 12
-    
-    local uic = Instance.new("UICorner")
-    uic.CornerRadius = UDim.new(0, 4)
-    uic.Parent = btn
-    
-    btn.MouseButton1Click:Connect(function()
-        alternarAba(nomeAba)
-    end)
-    btn.Parent = tabContainer
-end
-
-criarBotaoAba("Início", "Inicio")
-criarBotaoAba("Farm", "Farm")
-criarBotaoAba("Utils", "Utils")
-
-local function criarAlternadorMobile(pagina, texto, estadoKey)
-    local btn = Instance.new("TextButton")
-    btn.Size = UDim2.new(0.95, 0, 0, 35)
-    btn.Font = Enum.Font.SourceSansBold
+    btn.Size = UDim2.new(0.98, 0, 0, 40)
+    btn.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
+    btn.Font = Enum.Font.GothamBold
     btn.TextSize = 13
     btn.TextColor3 = Color3.fromRGB(255, 255, 255)
     
-    local uic = Instance.new("UICorner")
-    uic.CornerRadius = UDim.new(0, 6)
-    uic.Parent = btn
-
-    local function atualizarVisual()
-        if Estado[estadoKey] then
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = btn
+    
+    local function Atualizar()
+        if Configs[estadoKey] then
             btn.BackgroundColor3 = Color3.fromRGB(34, 197, 94)
-            btn.Text = texto .. ": LIGADO"
+            btn.Text = texto .. " [LIGADO]"
         else
-            btn.BackgroundColor3 = Color3.fromRGB(162, 62, 62)
-            btn.Text = texto .. ": DESLIGADO"
+            btn.BackgroundColor3 = Color3.fromRGB(185, 28, 28)
+            btn.Text = texto .. " [DESLIGADO]"
         end
     end
     
     btn.MouseButton1Click:Connect(function()
-        Estado[estadoKey] = not Estado[estadoKey]
-        atualizarVisual()
+        Configs[estadoKey] = not Configs[estadoKey]
+        Atualizar()
     end)
     
-    atualizarVisual()
-    btn.Parent = pagina
+    Atualizar()
+    btn.Parent = Content
     return btn
 end
 
-local function criarCampoTextoMobile(pagina, legenda, padrao, placeholder, callback)
-    local lbl = Instance.new("TextLabel")
-    lbl.Size = UDim2.new(0.95, 0, 0, 18)
-    lbl.Text = legenda
-    lbl.TextColor3 = Color3.fromRGB(200, 200, 200)
-    lbl.Font = Enum.Font.SourceSans
-    lbl.TextSize = 13
-    lbl.BackgroundTransparency = 1
-    lbl.TextXAlignment = Enum.TextXAlignment.Left
-    lbl.Parent = pagina
+CriarBotao("Auto Colheita [Harvest]", "AutoFarm")
+CriarBotao("Auto Regador [Water]", "AutoWater")
+CriarBotao("Auto Vender [Sell Crops]", "AutoSell")
+CriarBotao("Auto Pets & Ovos", "AutoPet")
+CriarBotao("Anti-AFK Global", "AutoAfk")
 
-    local box = Instance.new("TextBox")
-    box.Size = UDim2.new(0.95, 0, 0, 30)
-    box.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    box.Text = padrao
-    box.PlaceholderText = placeholder
-    box.TextColor3 = Color3.fromRGB(255, 255, 255)
-    box.Font = Enum.Font.SourceSans
-    box.TextSize = 13
-    
-    local uic = Instance.new("UICorner")
-    uic.CornerRadius = UDim.new(0, 6)
-    uic.Parent = box
-    
-    box.FocusLost:Connect(function() callback(box) end)
-    box.Parent = pagina
-    return box
-end
-
-local infoTxt = Instance.new("TextLabel")
-infoTxt.Size = UDim2.new(0.95, 0, 0, 45)
-infoTxt.Text = "Mistery Hub carregado!\nEstilo Axon Hub Mobile Ativo."
-infoTxt.TextColor3 = Color3.fromRGB(150, 150, 150)
-infoTxt.Font = Enum.Font.SourceSansItalic
-infoTxt.TextSize = 13
-infoTxt.BackgroundTransparency = 1
-infoTxt.Parent = pInicio
-
-criarAlternadorMobile(pInicio, "Anti-AFK", "AfkAtivo")
-
-criarAlternadorMobile(pFarm, "Colheita Auto", "FarmAtivo")
-criarAlternadorMobile(pFarm, "Teleporte", "TeleportAtivo")
-
-criarCampoTextoMobile(pFarm, "Tempo de Intervalo (Segundos):", "1.0", "", function(b)
-    local num = tonumber(b.Text)
-    if num and num > 0 then Estado.SegundosIntervalo = num else b.Text = tostring(Estado.SegundosIntervalo) end
-end)
-
-criarCampoTextoMobile(pFarm, "Nome da Planta (Vazio = Todas):", "", "Ex: Tomato", function(b)
-    Estado.PlantaAlvo = b.Text:lower()
-end)
-
-criarAlternadorMobile(pUtils, "Regar Auto", "RegarAtivo")
-criarAlternadorMobile(pUtils, "Sprinkler Auto", "SprinklerAtivo")
-criarAlternadorMobile(pUtils, "Comprar Pets", "PetAtivo")
-
-local timerLabel = Instance.new("TextLabel")
-timerLabel.Size = UDim2.new(0.95, 0, 0, 32)
-timerLabel.BackgroundColor3 = Color3.fromRGB(20, 20, 20)
-timerLabel.Text = "⏱️ Próximo Sprinkler: --"
-timerLabel.TextColor3 = Color3.fromRGB(150, 200, 255)
-timerLabel.Font = Enum.Font.SourceSansBold
-timerLabel.TextSize = 13
-timerLabel.Parent = pUtils
-
-local uicTimer = Instance.new("UICorner")
-uicTimer.CornerRadius = UDim.new(0, 6)
-uicTimer.Parent = timerLabel
-
-local function verificarPlantaValida(nomeModelo)
-    if Estado.PlantaAlvo == "" then return true end
-    return nomeModelo:lower():find(Estado.PlantaAlvo) ~= nil
-end
-
+-- Loop Avançado de Auto Colheita e Plantação para GAG2
 task.spawn(function()
     while true do
-        if Estado.FarmAtivo then
+        if Configs.AutoFarm then
             pcall(function()
-                local char = player.Character
-                local rootPart = char and char:FindFirstChild("HumanoidRootPart")
-                if rootPart then
-                    for _, objeto in pairs(workspace:GetDescendants()) do
-                        if not Estado.FarmAtivo then break end
-                        if objeto:IsA("ClickDetector") then
-                            local parentModel = objeto.Parent
-                            if parentModel and verificarPlantaValida(parentModel.Name) and (parentModel.Name:lower():find("garden") or parentModel.Name:lower():find("plant") or parentModel.Name:lower():find("flower")) then
-                                local part = parentModel:FindFirstChildWhichIsA("BasePart")
-                                if part then
-                                    if Estado.TeleportAtivo then
-                                        rootPart.CFrame = part.CFrame + Vector3.new(0, 3, 0)
-                                        task.wait(0.12)
+                local char = LocalPlayer.Character
+                local root = char and char:FindFirstChild("HumanoidRootPart")
+                if root then
+                    for _, obj in pairs(Workspace:GetDescendants()) do
+                        if not Configs.AutoFarm then break end
+                        if obj:IsA("ClickDetector") then
+                            local modelo = obj.Parent
+                            if modelo then
+                                local nome = modelo.Name:lower()
+                                if nome:find("plant") or nome:find("crop") or nome:find("harvest") or nome:find("flower") or nome:find("fruit") then
+                                    local part = modelo:FindFirstChildWhichIsA("BasePart")
+                                    if part then
+                                        root.CFrame = part.CFrame + Vector3.new(0, 2, 0)
+                                        task.wait(0.05)
+                                        if fireclickdetector then
+                                            fireclickdetector(obj)
+                                        end
+                                        task.wait(Configs.Delay)
                                     end
-                                    if fireclickdetector then fireclickdetector(objeto) end
-                                    task.wait(Estado.SegundosIntervalo)
                                 end
                             end
                         end
@@ -267,70 +145,46 @@ task.spawn(function()
                 end
             end)
         end
-        task.wait(0.5)
+        task.wait(0.3)
     end
 end)
 
+-- Loop para Regar, Vender e Pets/Ovos
 task.spawn(function()
     while true do
-        if Estado.RegarAtivo or Estado.SprinklerAtivo then
+        if Configs.AutoWater or Configs.AutoSell or Configs.AutoPet then
             pcall(function()
-                for _, objeto in pairs(workspace:GetDescendants()) do
-                    if objeto:IsA("ClickDetector") then
-                        local parentModel = objeto.Parent
-                        if parentModel and verificarPlantaValida(parentModel.Name) then
-                            if Estado.RegarAtivo and (parentModel.Name:lower():find("water") or parentModel.Name:lower():find("regar") or parentModel.Name:lower():find("can")) then
-                                if fireclickdetector then fireclickdetector(objeto) end
-                                task.wait(Estado.SegundosIntervalo)
-                            end
-                            if Estado.SprinklerAtivo and (parentModel.Name:lower():find("sprinkler") or parentModel.Name:lower():find("spliker")) then
-                                if fireclickdetector then fireclickdetector(objeto) end
-                                Estado.TempoRestanteSprinkler = Estado.SegundosIntervalo
-                                while Estado.TempoRestanteSprinkler > 0 and Estado.SprinklerAtivo do
-                                    timerLabel.Text = string.format("⏱️ Próximo Sprinkler: %.1fs", Estado.TempoRestanteSprinkler)
-                                    task.wait(0.1)
-                                    Estado.TempoRestanteSprinkler = Estado.TempoRestanteSprinkler - 0.1
-                                end
-                            end
+                for _, obj in pairs(Workspace:GetDescendants()) do
+                    if obj:IsA("ClickDetector") then
+                        local nome = obj.Parent and obj.Parent.Name:lower() or ""
+                        if Configs.AutoWater and (nome:find("water") or nome:find("regar") or nome:find("sprinkler")) then
+                            if fireclickdetector then fireclickdetector(obj) end
+                            task.wait(0.15)
                         end
-                    end
-                end
-            end)
-        else
-            timerLabel.Text = "⏱️ Próximo Sprinkler: --"
-        end
-        task.wait(0.5)
-    end
-end)
-
-task.spawn(function()
-    while true do
-        if Estado.PetAtivo then
-            pcall(function()
-                for _, objeto in pairs(workspace:GetDescendants()) do
-                    if not Estado.PetAtivo then break end
-                    if objeto:IsA("ClickDetector") then
-                        local parentModel = objeto.Parent
-                        if parentModel and (parentModel.Name:lower():find("pet") or parentModel.Name:lower():find("egg")) then
-                            objeto.MaxActivationDistance = math.huge
-                            if fireclickdetector then fireclickdetector(objeto) end
+                        if Configs.AutoSell and (nome:find("sell") or nome:find("shop") or nome:find("coin")) then
+                            if fireclickdetector then fireclickdetector(obj) end
+                            task.wait(0.2)
+                        end
+                        if Configs.AutoPet and (nome:find("pet") or nome:find("egg")) then
+                            obj.MaxActivationDistance = math.huge
+                            if fireclickdetector then fireclickdetector(obj) end
                             task.wait(0.15)
                         end
                     end
                 end
             end)
         end
-        task.wait(0.5)
+        task.wait(0.4)
     end
 end)
 
-local VirtualUser = game:GetService("VirtualUser")
-player.Idled:Connect(function()
-    if Estado.AfkAtivo then
-        VirtualUser:Button2Down(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+-- Anti-AFK
+LocalPlayer.Idled:Connect(function()
+    if Configs.AutoAfk then
+        VirtualUser:Button2Down(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
         task.wait(1)
-        VirtualUser:Button2Up(Vector2.new(0,0), workspace.CurrentCamera.CFrame)
+        VirtualUser:Button2Up(Vector2.new(0,0), Workspace.CurrentCamera.CFrame)
     end
 end)
 
-print("🚀 Mistery Hub executado via GitHub com sucesso!")
+print("🚀 Mistery Hub (Grow a Garden 2) Carregado com Sucesso!")

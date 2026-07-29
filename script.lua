@@ -1,5 +1,5 @@
 -- ===============================================================
--- GAG HUB - SCRIPT COMPLETO (VERSÃO CORRIGIDA AUTO-VENDA)
+-- GAG HUB - SCRIPT COMPLETO (AUTO VENDA FORÇADA)
 -- Feito para Grow a Garden (Roblox)
 -- ===============================================================
 
@@ -9,7 +9,7 @@ if _G.GAGHubLoaded then
 end
 _G.GAGHubLoaded = true
 
-local VERSION = "1.0.1"
+local VERSION = "1.0.2"
 
 ---------------------------------------------------------------
 -- CONFIGURAÇÕES GLOBAIS
@@ -21,7 +21,7 @@ local Config = {
     },
     Timings = {
         HarvestInterval = 2,
-        SellInterval = 3, -- Otimizado para vender mais rápido
+        SellInterval = 2, -- Intervalo mais rápido para testar a venda
         WaterInterval = 3,
         PlantInterval = 2,
         RestockPollInterval = 1,
@@ -141,37 +141,29 @@ local Resources = {
 local Networking = {}
 do
     local RS = game:GetService("ReplicatedStorage")
-    local Remotes = RS:FindFirstChild("Remotes") or RS
-
-    function Networking.getRemote(name)
-        local current = Remotes
-        for part in string.gmatch(name, "[^.]+") do
-            if current then
-                current = current:FindFirstChild(part)
+    
+    function Networking.fire(remoteName, ...)
+        pcall(function()
+            local remote = RS:FindFirstChild(remoteName, true)
+            if remote and remote:IsA("RemoteEvent") then
+                remote:FireServer(...)
             end
-        end
-        return current
+        end)
     end
-
-    function Networking.fire(name, ...)
-        local remote = Networking.getRemote(name)
-        if remote and remote:IsA("RemoteEvent") then
-            remote:FireServer(...)
-            return true
-        end
-        return false
-    end
-
-    function Networking.invoke(name, ...)
-        local remote = Networking.getRemote(name)
-        if remote and remote:IsA("RemoteFunction") then
-            return remote:InvokeServer(...)
-        end
+    
+    function Networking.invoke(remoteName, ...)
+        local success, result = pcall(function()
+            local remote = RS:FindFirstChild(remoteName, true)
+            if remote and remote:IsA("RemoteFunction") then
+                return remote:InvokeServer(...)
+            end
+        end)
+        if success then return result end
         return nil
     end
 
-    function Networking.on(name, callback)
-        local remote = Networking.getRemote(name)
+    function Networking.on(remoteName, callback)
+        local remote = RS:FindFirstChild(remoteName, true)
         if remote and remote:IsA("RemoteEvent") then
             return remote.OnClientEvent:Connect(callback)
         end
@@ -362,7 +354,7 @@ do
 end
 
 ---------------------------------------------------------------
--- MÓDULO: AUTO SELL (Venda Automática Forçada/Corrigida)
+-- MÓDULO: AUTO SELL (Super Venda - Múltiplas Tentativas)
 ---------------------------------------------------------------
 Modules.AutoSell = {}
 do
@@ -374,31 +366,39 @@ do
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
-        local interval = config.Timings.SellInterval or 3
+        local interval = config.Timings.SellInterval or 2
 
         M._thread = task.spawn(function()
             while M._running do
                 pcall(function()
                     local lp = Utils.getLocalPlayer()
                     local backpack = lp and lp:FindFirstChild("Backpack")
-                    if backpack then
-                        for _, tool in ipairs(backpack:GetChildren()) do
-                            if tool:IsA("Tool") then
-                                -- Verifica se é fruta por atributo OU se NÃO é uma ferramenta padrão da lista
-                                local isGear = false
-                                for _, gearName in ipairs(Resources.AllGears) do
-                                    if tool.Name == gearName then
-                                        isGear = true
-                                        break
+                    local character = lp and lp.Character
+                    
+                    local containers = {backpack, character}
+                    
+                    for _, container in ipairs(containers) do
+                        if container then
+                            for _, tool in ipairs(container:GetChildren()) do
+                                if tool:IsA("Tool") then
+                                    local isGear = false
+                                    for _, gearName in ipairs(Resources.AllGears) do
+                                        if tool.Name == gearName then
+                                            isGear = true
+                                            break
+                                        end
                                     end
-                                end
 
-                                if not isGear then
-                                    -- Tenta disparar os remotos de venda possíveis do jogo
-                                    Net.fire("NPCS.SellItem", tool)
-                                    Net.fire("SellItem", tool)
-                                    Net.fire("Shop.SellItem", tool)
-                                    M._stats.sold += 1
+                                    if not isGear then
+                                        -- Dispara todas as variações conhecidas de remote de venda no jogo
+                                        Net.fire("NPCS.SellItem", tool)
+                                        Net.fire("SellItem", tool)
+                                        Net.fire("Shop.SellItem", tool)
+                                        Net.fire("SellAll")
+                                        Net.fire("Sell", tool)
+                                        
+                                        M._stats.sold += 1
+                                    end
                                 end
                             end
                         end
@@ -694,9 +694,9 @@ local function createUI()
     Stats.init()
 
     local Window = Rayfield:CreateWindow({
-        Name = "🌿 " .. Config.UI.Title .. " v" .. VERSION,
+        Name = "🌿 " .. Config.UI.Title + " v" .. VERSION,
         LoadingTitle = "Carregando GAG Hub...",
-        LoadingSubtitle = "por Brave (Versão Corrigida)",
+        LoadingSubtitle = "por Brave (Auto Venda Forçada)",
         ConfigurationSaving = { Enabled = true, FolderName = "GAGHub", FileName = "config_pt" },
         Discord = { Enabled = false },
         KeySystem = false,
@@ -814,5 +814,5 @@ task.spawn(function()
 end)
 
 task.spawn(createUI)
-Config.Notify("GAG Hub Carregado!", "Auto Venda corrigido para focar em itens da mochila!", 5)
+Config.Notify("GAG Hub Carregado!", "Auto Venda forçada e otimizada ativa!", 5)
 print("[GAG Hub] Carregado com sucesso!")

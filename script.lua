@@ -1,15 +1,15 @@
 -- ===============================================================
--- TSUO HUB - SCRIPT COMPLETO (VERSÃO PT-BR CORRIGIDA)
+-- GAG HUB - SCRIPT COMPLETO (VERSÃO CORRIGIDA AUTO-VENDA)
 -- Feito para Grow a Garden (Roblox)
 -- ===============================================================
 
-if _G.TsuoHubLoaded then
-    warn("[TSUO Hub] O Hub já está em execução!")
+if _G.GAGHubLoaded then
+    warn("[GAG Hub] O Hub já está em execução!")
     return
 end
-_G.TsuoHubLoaded = true
+_G.GAGHubLoaded = true
 
-local VERSION = "1.2.4"
+local VERSION = "1.0.1"
 
 ---------------------------------------------------------------
 -- CONFIGURAÇÕES GLOBAIS
@@ -17,12 +17,11 @@ local VERSION = "1.2.4"
 
 local Config = {
     UI = {
-        Title = "TSUO HUB",
-        Icon = 6034510, 
+        Title = "GAG Hub | Grow a Garden",
     },
     Timings = {
         HarvestInterval = 2,
-        SellInterval = 3, -- Intervalo otimizado para vender mais rápido
+        SellInterval = 3, -- Otimizado para vender mais rápido
         WaterInterval = 3,
         PlantInterval = 2,
         RestockPollInterval = 1,
@@ -363,7 +362,7 @@ do
 end
 
 ---------------------------------------------------------------
--- MÓDULO: AUTO SELL (Venda Automática Corrigida)
+-- MÓDULO: AUTO SELL (Venda Automática Forçada/Corrigida)
 ---------------------------------------------------------------
 Modules.AutoSell = {}
 do
@@ -381,26 +380,25 @@ do
             while M._running do
                 pcall(function()
                     local lp = Utils.getLocalPlayer()
-                    local containers = {lp:FindFirstChild("Backpack"), lp.Character}
-                    
-                    for _, container in ipairs(containers) do
-                        if container then
-                            for _, item in ipairs(container:GetChildren()) do
-                                if item:IsA("Tool") then
-                                    -- Verifica por atributos ou se está na lista de frutas conhecidas
-                                    local isFruitLike = item:GetAttribute("FruitName") 
-                                        or item:GetAttribute("IsFruit") 
-                                        or item:GetAttribute("Value") 
-                                        or item:GetAttribute("Price")
-                                        or not table.find(Resources.AllGears, item.Name) -- Garante que não é uma ferramenta de uso (regador, etc)
-
-                                    if isFruitLike then
-                                        -- Tenta diferentes caminhos comuns de Remote para venda no jogo
-                                        Net.fire("NPCS.SellItem", item)
-                                        Net.fire("SellItem", item)
-                                        Net.fire("Shop.SellItem", item)
-                                        M._stats.sold += 1
+                    local backpack = lp and lp:FindFirstChild("Backpack")
+                    if backpack then
+                        for _, tool in ipairs(backpack:GetChildren()) do
+                            if tool:IsA("Tool") then
+                                -- Verifica se é fruta por atributo OU se NÃO é uma ferramenta padrão da lista
+                                local isGear = false
+                                for _, gearName in ipairs(Resources.AllGears) do
+                                    if tool.Name == gearName then
+                                        isGear = true
+                                        break
                                     end
+                                end
+
+                                if not isGear then
+                                    -- Tenta disparar os remotos de venda possíveis do jogo
+                                    Net.fire("NPCS.SellItem", tool)
+                                    Net.fire("SellItem", tool)
+                                    Net.fire("Shop.SellItem", tool)
+                                    M._stats.sold += 1
                                 end
                             end
                         end
@@ -689,17 +687,17 @@ local function createUI()
         Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
     end)
     if not ok or not Rayfield then
-        warn("[TSUO Hub] Falha ao carregar o Rayfield UI!")
+        warn("[GAG Hub] Falha ao carregar o Rayfield UI!")
         return false
     end
 
     Stats.init()
 
     local Window = Rayfield:CreateWindow({
-        Name = "🐉 " .. Config.UI.Title .. " v" .. VERSION,
-        LoadingTitle = "Carregando Tsuo Hub...",
-        LoadingSubtitle = "por Tsuo (Dragão Edition)",
-        ConfigurationSaving = { Enabled = true, FolderName = "TsuoHub", FileName = "config_tsuo" },
+        Name = "🌿 " .. Config.UI.Title .. " v" .. VERSION,
+        LoadingTitle = "Carregando GAG Hub...",
+        LoadingSubtitle = "por Brave (Versão Corrigida)",
+        ConfigurationSaving = { Enabled = true, FolderName = "GAGHub", FileName = "config_pt" },
         Discord = { Enabled = false },
         KeySystem = false,
     })
@@ -770,11 +768,11 @@ local function createUI()
     StatusTab:CreateSection("🎮 Painel de Controle Global")
     StatusTab:CreateButton({Name = "✅ Ativar Tudo", Callback = function()
         for n in pairs(Modules) do startModule(n) end
-        Rayfield:Notify({Title = "TSUO HUB", Content = "Todos os módulos foram ativados!", Duration = 3})
+        Rayfield:Notify({Title = "GAG Hub", Content = "Todos os módulos foram ativados!", Duration = 3})
     end})
     StatusTab:CreateButton({Name = "❌ Desativar Tudo", Callback = function()
         for n in pairs(Modules) do stopModule(n) end
-        Rayfield:Notify({Title = "TSUO HUB", Content = "Todos os módulos foram desativados!", Duration = 3})
+        Rayfield:Notify({Title = "GAG Hub", Content = "Todos os módulos foram desativados!", Duration = 3})
     end})
 
     task.spawn(function()
@@ -794,7 +792,7 @@ end
 -- API DO CONSOLE E INICIALIZAÇÃO
 ---------------------------------------------------------------
 
-_G.TsuoHub = {
+_G.GAGHub = {
     Config = Config,
     Modules = Modules,
     Net = Networking,
@@ -816,5 +814,5 @@ task.spawn(function()
 end)
 
 task.spawn(createUI)
-Config.Notify("TSUO HUB Carregado!", "Auto Venda corrigido e atualizado com sucesso!", 5)
-print("[TSUO HUB] Carregado com sucesso!")
+Config.Notify("GAG Hub Carregado!", "Auto Venda corrigido para focar em itens da mochila!", 5)
+print("[GAG Hub] Carregado com sucesso!")

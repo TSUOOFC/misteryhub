@@ -1,11 +1,11 @@
 --[[
-    GAG HUB - All-in-One
+    TSUO HUB - All-in-One
     Single file. No sub-module loading. Paste & play.
     Usage: loadstring(game:HttpGet("https://raw.githubusercontent.com/ahmadlagi889-commits/tempek-gag2/main/hub.lua"))()
 ]]
 
 if not game or not game:GetService("Players") then
-    error("[GAG Hub] Must run inside Roblox game")
+    error("[TSUO Hub] Must run inside Roblox game")
 end
 
 ---------------------------------------------------------------
@@ -45,7 +45,7 @@ local Config = {
         PriceMultipliers = { Gold = 20, Rainbow = 50, Electric = 12, Frozen = 10, Bloodlit = 5, Chained = 8, Starstruck = 100 },
         LogToConsole = true,
     },
-    UI = { Title = "GAG Hub", Subtitle = "Grow A Garden Automation", NotifyDuration = 5 },
+    UI = { Title = "TSUO HUB", Subtitle = "Automação TSUO HUB", NotifyDuration = 5 },
     Server = { TargetJobId = "", AutoRejoin = true, RejoinDelay = 5, MaxRetries = 10 },
     PetCatch = { MinRarity = "Common", AutoReturn = true },
 }
@@ -53,7 +53,7 @@ local Config = {
 function Config.Notify(title, text, duration)
     pcall(function()
         game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = title or "GAG Hub", Text = text or "",
+            Title = title or "TSUO HUB", Text = text or "",
             Duration = duration or Config.UI.NotifyDuration,
         })
     end)
@@ -111,7 +111,7 @@ function Networking._resolve()
     end)
 
     if gcOk and gcResult and type(gcResult) == "table" then
-        print("[GAG Hub] Networking resolved via getgc")
+        print("[TSUO Hub] Networking resolved via getgc")
         Networking._module = gcResult
         return gcResult
     end
@@ -129,12 +129,12 @@ function Networking._resolve()
     end)
 
     if pktOk and pktResult and type(pktResult) == "table" then
-        print("[GAG Hub] Networking resolved via Packet pre-require")
+        print("[TSUO Hub] Networking resolved via Packet pre-require")
         Networking._module = pktResult
         return pktResult
     end
 
-    warn("[GAG Hub] Failed to resolve Networking module (all methods failed):", result or gcResult or pktResult)
+    warn("[TSUO Hub] Failed to resolve Networking module (all methods failed):", result or gcResult or pktResult)
     return nil
 end
 
@@ -153,7 +153,7 @@ function Networking._resolveRemote(path)
     local current = net
     for segment in string.gmatch(path, "[^%.]+") do
         if type(current) ~= "table" then
-            warn("[GAG Hub] Remote path broken at segment:", segment, "in", path)
+            warn("[TSUO Hub] Remote path broken at segment:", segment, "in", path)
             return nil
         end
         current = current[segment]
@@ -166,7 +166,7 @@ function Networking._resolveRemote(path)
                 end
             end
             if current == nil then
-                warn("[GAG Hub] Remote not found:", segment, "in path", path)
+                warn("[TSUO Hub] Remote not found:", segment, "in path", path)
                 return nil
             end
         end
@@ -183,7 +183,7 @@ end
 function Networking.fire(path, ...)
     local remote = Networking._resolveRemote(path)
     if not remote then
-        warn("[GAG Hub] Cannot fire - remote not found:", path)
+        warn("[TSUO Hub] Cannot fire - remote not found:", path)
         return false
     end
 
@@ -200,12 +200,12 @@ function Networking.fire(path, ...)
     end)
 
     if not ok then
-        warn("[GAG Hub] Fire error on", path, ":", err)
+        warn("[TSUO Hub] Fire error on", path, ":", err)
         return false
     end
 
     if Networking._log then
-        print("[GAG Hub] Fired:", path)
+        print("[TSUO Hub] Fired:", path)
     end
     return true
 end
@@ -217,7 +217,7 @@ end
 function Networking.invoke(path, ...)
     local remote = Networking._resolveRemote(path)
     if not remote then
-        warn("[GAG Hub] Cannot invoke - remote not found:", path)
+        warn("[TSUO Hub] Cannot invoke - remote not found:", path)
         return nil
     end
 
@@ -232,7 +232,7 @@ function Networking.invoke(path, ...)
     end)
 
     if not ok then
-        warn("[GAG Hub] Invoke error on", path, ":", result)
+        warn("[TSUO Hub] Invoke error on", path, ":", result)
         return nil
     end
 
@@ -246,7 +246,7 @@ end
 function Networking.on(path, callback)
     local remote = Networking._resolveRemote(path)
     if not remote then
-        warn("[GAG Hub] Cannot listen - remote not found:", path)
+        warn("[TSUO Hub] Cannot listen - remote not found:", path)
         return nil
     end
 
@@ -257,7 +257,7 @@ function Networking.on(path, callback)
             return remote:Connect(callback)
         else
             -- Try the .Changed pattern or direct connect
-            warn("[GAG Hub] Remote has no OnClientEvent:", path)
+            warn("[TSUO Hub] Remote has no OnClientEvent:", path)
             return nil
         end
     end)
@@ -547,7 +547,7 @@ end
 function Utils.safeCall(fn, ...)
     local ok, result = pcall(fn, ...)
     if not ok then
-        warn("[GAG Hub] Error:", result)
+        warn("[TSUO Hub] Error:", result)
     end
     return ok, result
 end
@@ -701,7 +701,7 @@ function AntiAfk.start(config)
         end)
     end)
 
-    print("[GAG Hub] Anti-AFK started (interval: " .. interval .. "s)")
+    print("[TSUO Hub] Anti-AFK started (interval: " .. interval .. "s)")
 end
 
 function AntiAfk.stop()
@@ -759,7 +759,7 @@ function AntiAfk.startAutoRejoin(config)
         end
     end)
 
-    print("[GAG Hub] Auto-Rejoin enabled")
+    print("[TSUO Hub] Auto-Rejoin enabled")
 end
 
 function AntiAfk.getStats()
@@ -780,7 +780,7 @@ local function startModule(name)
     if mod and mod.start then
         mod.start(Config, Networking, Utils)
         Running[name] = true
-        print("[GAG Hub] Started:", name)
+        print("[TSUO Hub] Started:", name)
     end
 end
 
@@ -790,7 +790,7 @@ local function stopModule(name)
     if mod and mod.stop then
         mod.stop()
         Running[name] = false
-        print("[GAG Hub] Stopped:", name)
+        print("[TSUO Hub] Stopped:", name)
     end
 end
 
@@ -815,7 +815,7 @@ end)
 if not Resources then
     -- Fallback: inline minimal prices
     Resources = { SeedPrices = {}, GearPrices = {}, SeedMeta = {}, GearMeta = {}, AllSeeds = {}, AllGears = {} }
-    warn("[GAG Hub] Failed to load resources.lua, affordability guard disabled")
+    warn("[TSUO Hub] Failed to load resources.lua, affordability guard disabled")
 end
 
 ---------------------------------------------------------------
@@ -946,7 +946,7 @@ do
             end
         end)
 
-        print("[GAG Hub] Auto-Harvest started")
+        print("[TSUO Hub] Auto-Harvest started")
     end
 
     ---------------------------------------------------------------
@@ -1000,7 +1000,7 @@ function Sell.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Auto-Sell started (mode: " .. (sellConfig.Mode or "all") .. ")")
+    print("[TSUO Hub] Auto-Sell started (mode: " .. (sellConfig.Mode or "all") .. ")")
 end
 
 ---------------------------------------------------------------
@@ -1278,7 +1278,7 @@ function Water.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Auto-Water started")
+    print("[TSUO Hub] Auto-Water started")
 end
 
 ---------------------------------------------------------------
@@ -1719,7 +1719,7 @@ function Plant.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Auto-Plant started")
+    print("[TSUO Hub] Auto-Plant started")
 end
 
 ---------------------------------------------------------------
@@ -1755,7 +1755,7 @@ function Plant._autoPlant(plantConfig, Net, Utils)
         return
     end
 
-    print("[GAG Hub] Found", #spots, "empty spots in plot")
+    print("[TSUO Hub] Found", #spots, "empty spots in plot")
 
     -- Step 4: Plant in ALL empty spots (fill the entire plot)
     local planted = 0
@@ -1777,7 +1777,7 @@ function Plant._autoPlant(plantConfig, Net, Utils)
         if ok then
             planted += 1
             Plant._stats.planted += 1
-            print("[GAG Hub] Planted:", seedName, "at", tostring(pos))
+            print("[TSUO Hub] Planted:", seedName, "at", tostring(pos))
         else
             Plant._stats.errors += 1
         end
@@ -1789,7 +1789,7 @@ function Plant._autoPlant(plantConfig, Net, Utils)
     Plant._unequipTool()
 
     if planted > 0 then
-        print("[GAG Hub] Auto-Plant cycle: planted", planted, seedName)
+        print("[TSUO Hub] Auto-Plant cycle: planted", planted, seedName)
     end
 end
 
@@ -1880,7 +1880,7 @@ function Restock.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Restock Sniper started (targets: " ..
+    print("[TSUO Hub] Restock Sniper started (targets: " ..
         #(restockConfig.TargetSeeds or {}) .. " seeds)")
 end
 
@@ -1942,7 +1942,7 @@ function Restock._pollAndBuy(restockConfig, Net, Utils)
         end
 
         if buyCount > 0 then
-            print("[GAG Hub] Drained:", seedName, "x" .. buyCount, "(stock was:", stock .. ")")
+            print("[TSUO Hub] Drained:", seedName, "x" .. buyCount, "(stock was:", stock .. ")")
         end
     end
 end
@@ -2057,7 +2057,7 @@ function Mutation.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Mutation Tracker started")
+    print("[TSUO Hub] Mutation Tracker started")
 end
 
 ---------------------------------------------------------------
@@ -2105,7 +2105,7 @@ function Mutation._onMutation(source, plantId, mutation, config, Utils)
             source, tostring(plantId), mutation, mult)
 
         if config.LogToConsole then
-            print("[GAG Hub] 🧬 " .. msg)
+            print("[TSUO Hub] 🧬 " .. msg)
         end
 
         Config.Notify("🧬 Mutation Detected!", msg, 8)
@@ -2277,7 +2277,7 @@ function Weather.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Weather Bot started")
+    print("[TSUO Hub] Weather Bot started")
 end
 
 ---------------------------------------------------------------
@@ -2318,13 +2318,13 @@ function Weather._onWeatherEvent(eventPath, config, Utils, ...)
         end
 
         local msg = emoji .. " " .. weatherType .. " event detected!"
-        print("[GAG Hub] " .. msg)
+        print("[TSUO Hub] " .. msg)
         Config.Notify("Weather Event!", msg, 10)
 
         -- Execute configured action
         local action = config.Actions and config.Actions[weatherType]
         if action == "harvest_priority" then
-            print("[GAG Hub] Priority harvest triggered by weather event")
+            print("[TSUO Hub] Priority harvest triggered by weather event")
         end
 
         -- Play sound
@@ -2575,10 +2575,10 @@ do
 
         -- Listen for server steal confirmation events
         local startedConn = Net.on("Steal.StealStarted", function(fruitInstance)
-            print("[GAG Hub] StealStarted confirmed by server:", fruitInstance and fruitInstance.Name or "?")
+            print("[TSUO Hub] StealStarted confirmed by server:", fruitInstance and fruitInstance.Name or "?")
         end)
         local cancelledConn = Net.on("Steal.StealCancelled", function(fruitInstance)
-            print("[GAG Hub] StealCancelled by server:", fruitInstance and fruitInstance.Name or "?")
+            print("[TSUO Hub] StealCancelled by server:", fruitInstance and fruitInstance.Name or "?")
         end)
         if startedConn then table.insert(Steal._connections, startedConn) end
         if cancelledConn then table.insert(Steal._connections, cancelledConn) end
@@ -2590,12 +2590,12 @@ do
                 if isNight and not wasNight then
                     Steal._stats.nightCycles += 1
                     Steal._stats.attempts = 0 -- reset per night
-                    print("[GAG Hub] 🌙 Night cycle started - Steal Bot active")
+                    print("[TSUO Hub] 🌙 Night cycle started - Steal Bot active")
                 end
                 if isNight then
                     Steal._stealLoop(stealConfig, Net, Utils)
                 elseif wasNight then
-                    print("[GAG Hub] ☀️ Day started - Steal Bot sleeping")
+                    print("[TSUO Hub] ☀️ Day started - Steal Bot sleeping")
                     pcall(function() Net.fire("Steal.CancelSteal") end)
                 end
                 wasNight = isNight
@@ -2603,7 +2603,7 @@ do
             end
         end)
 
-        print("[GAG Hub] Steal Bot started (waits for night)")
+        print("[TSUO Hub] Steal Bot started (waits for night)")
     end
 
     ---------------------------------------------------------------
@@ -2651,7 +2651,7 @@ do
             local success = Steal._attemptSteal(entry, Net, Utils)
             if success then
                 Steal._stats.stolen += 1
-                print("[GAG Hub] Stolen from", entry.gardenName, "plant:", entry.plantId, "value:", sellValue)
+                print("[TSUO Hub] Stolen from", entry.gardenName, "plant:", entry.plantId, "value:", sellValue)
                 return
             end
 
@@ -2739,7 +2739,7 @@ do
 
         if carrying then
             Steal._stats.returned += 1
-            print("[GAG Hub] Stolen + returned to base")
+            print("[TSUO Hub] Stolen + returned to base")
         end
 
         return carrying and true or false
@@ -2762,7 +2762,7 @@ do
             task.wait(1)
         end
         Steal._stats.returned += 1
-        print("[GAG Hub] Returned stolen fruit to plot")
+        print("[TSUO Hub] Returned stolen fruit to plot")
     end
 
     ---------------------------------------------------------------
@@ -2955,7 +2955,7 @@ function Pet._findAndSellPet(petName, Net)
 
     local found = scanContainer(backpack) or scanContainer(char)
     if not found then
-        print("[GAG Hub] Sell: pet tool not found for", petName)
+        print("[TSUO Hub] Sell: pet tool not found for", petName)
         return false
     end
 
@@ -2971,7 +2971,7 @@ function Pet._findAndSellPet(petName, Net)
     end)
 
     if ok and result and result.Success then
-        print("[GAG Hub] Sold pet:", petName, "for", tostring(result.SellPrice or "?"))
+        print("[TSUO Hub] Sold pet:", petName, "for", tostring(result.SellPrice or "?"))
         return true
     end
 
@@ -3007,20 +3007,20 @@ function Pet._autoHatch(petConfig, Net, Utils)
     local passes = Pet._passesFilter(result.petName, result.size, minRarity)
 
     local sizeStr = result.size and (" [" .. result.size .. "]") or ""
-    print("[GAG Hub] Hatched:", result.petName, sizeStr, "(" .. speciesRarity .. ")")
+    print("[TSUO Hub] Hatched:", result.petName, sizeStr, "(" .. speciesRarity .. ")")
 
     if passes then
         Pet._stats.kept += 1
-        print("[GAG Hub] KEPT - matches rarity filter:", minRarity .. "+")
+        print("[TSUO Hub] KEPT - matches rarity filter:", minRarity .. "+")
     else
         if autoSell then
             local sold = Pet._findAndSellPet(result.petName, Net)
             if sold then
                 Pet._stats.sold += 1
-                print("[GAG Hub] SOLD - below rarity filter")
+                print("[TSUO Hub] SOLD - below rarity filter")
             end
         else
-            print("[GAG Hub] Below filter (" .. minRarity .. "+), kept in inventory")
+            print("[TSUO Hub] Below filter (" .. minRarity .. "+), kept in inventory")
         end
     end
 end
@@ -3043,7 +3043,7 @@ function Pet.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Auto-Buy Pet started")
+    print("[TSUO Hub] Auto-Buy Pet started")
 end
 
 function Pet.stop()
@@ -3088,7 +3088,7 @@ function Inventory.start(config, Net, Utils)
         end
     end)
 
-    print("[GAG Hub] Inventory Optimizer started")
+    print("[TSUO Hub] Inventory Optimizer started")
 end
 
 ---------------------------------------------------------------
@@ -3351,7 +3351,7 @@ do
             end
 
             if buyCount > 0 then
-                print("[GAG Hub] Gear bought:", gearName, "x" .. buyCount)
+                print("[TSUO Hub] Gear bought:", gearName, "x" .. buyCount)
             end
         end
     end
@@ -3370,7 +3370,7 @@ do
             end
         end)
 
-        print("[GAG Hub] Gear Buyer started")
+        print("[TSUO Hub] Gear Buyer started")
     end
 
     function Gear.stop()
@@ -3468,7 +3468,7 @@ do
                 claimed = true
             end)
             if claimed then
-                print("[GAG Hub] SeedPack ProximityPrompt fired:", spawn.pack or part.Name)
+                print("[TSUO Hub] SeedPack ProximityPrompt fired:", spawn.pack or part.Name)
             end
         end
 
@@ -3497,18 +3497,18 @@ do
         if spawn.rainbow then
             SeedPack._stats.rainbow += 1
             SeedPack._stats.claimed += 1
-            print("[GAG Hub] 🌈 RAINBOW SEED claimed!")
+            print("[TSUO Hub] 🌈 RAINBOW SEED claimed!")
             Config.Notify("Rainbow Seed!", "Rainbow Seed pack claimed!", 10)
         elseif spawn.gold then
             SeedPack._stats.gold += 1
             SeedPack._stats.claimed += 1
-            print("[GAG Hub] 🥇 GOLD SEED claimed!")
+            print("[TSUO Hub] 🥇 GOLD SEED claimed!")
             Config.Notify("Gold Seed!", "Gold Seed pack claimed!", 10)
         else
             SeedPack._stats.regular += 1
             SeedPack._stats.claimed += 1
             if packId ~= "" then
-                print("[GAG Hub] Seed pack claimed:", packId)
+                print("[TSUO Hub] Seed pack claimed:", packId)
             end
         end
 
@@ -3584,7 +3584,7 @@ do
             end
         end)
 
-        print("[GAG Hub] Seed Pack Claimer started")
+        print("[TSUO Hub] Seed Pack Claimer started")
     end
 
     function SeedPack.stop()
@@ -3622,14 +3622,14 @@ do
         local maxRetries = serverConfig.MaxRetries or 10
 
         if targetJobId == "" then
-            warn("[GAG Hub] AutoJoinServer: no TargetJobId set — set Config.Server.TargetJobId first")
+            warn("[TSUO Hub] AutoJoinServer: no TargetJobId set — set Config.Server.TargetJobId first")
             M._running = false
             return
         end
 
         -- If already on target server, just enable auto-rejoin
         if game.JobId == targetJobId then
-            print("[GAG Hub] Already on target server:", targetJobId)
+            print("[TSUO Hub] Already on target server:", targetJobId)
             if autoRejoin then
                 M._setupAutoRejoin(config, Utils)
             end
@@ -3643,7 +3643,7 @@ do
 
             while M._running and retries < maxRetries do
                 retries += 1
-                print("[GAG Hub] AutoJoinServer: teleporting to", targetJobId, "(attempt " .. retries .. ")")
+                print("[TSUO Hub] AutoJoinServer: teleporting to", targetJobId, "(attempt " .. retries .. ")")
 
                 local ok, err = pcall(function()
                     TS:TeleportToPlaceInstance(game.PlaceId, targetJobId, LP)
@@ -3651,23 +3651,23 @@ do
 
                 if ok then
                     M._stats.teleports += 1
-                    print("[GAG Hub] AutoJoinServer: teleport initiated")
+                    print("[TSUO Hub] AutoJoinServer: teleport initiated")
                     -- Wait for teleport to process
                     task.wait(10)
                     -- If still here, teleport may have failed
                     if game.JobId ~= targetJobId then
-                        warn("[GAG Hub] AutoJoinServer: still on old server, retrying...")
+                        warn("[TSUO Hub] AutoJoinServer: still on old server, retrying...")
                     end
                 else
                     M._stats.errors += 1
-                    warn("[GAG Hub] AutoJoinServer: teleport error:", err)
+                    warn("[TSUO Hub] AutoJoinServer: teleport error:", err)
                 end
 
                 task.wait(rejoinDelay)
             end
 
             if retries >= maxRetries then
-                warn("[GAG Hub] AutoJoinServer: max retries reached")
+                warn("[TSUO Hub] AutoJoinServer: max retries reached")
                 Config.Notify("Server Join Failed", "Could not join target server after " .. maxRetries .. " attempts", 10)
             end
         end)
@@ -3677,7 +3677,7 @@ do
             M._setupAutoRejoin(config, Utils)
         end
 
-        print("[GAG Hub] AutoJoinServer started → JobId:", targetJobId)
+        print("[TSUO Hub] AutoJoinServer started → JobId:", targetJobId)
     end
 
     function M._setupAutoRejoin(config, Utils)
@@ -3690,7 +3690,7 @@ do
             if not M._running then return end
             if targetJobId == "" then return end
 
-            warn("[GAG Hub] TeleportInitFailed:", teleportResult, errorMessage, "— rejoining in", rejoinDelay, "s")
+            warn("[TSUO Hub] TeleportInitFailed:", teleportResult, errorMessage, "— rejoining in", rejoinDelay, "s")
             task.wait(rejoinDelay)
 
             local LP = Utils.getLocalPlayer()
@@ -3714,7 +3714,7 @@ do
 
             -- Check if we're on wrong server after respawn
             if game.JobId ~= targetJobId then
-                print("[GAG Hub] AutoJoinServer: respawned on wrong server, rejoining target...")
+                print("[TSUO Hub] AutoJoinServer: respawned on wrong server, rejoining target...")
                 task.wait(rejoinDelay)
                 pcall(function()
                     TS:TeleportToPlaceInstance(game.PlaceId, targetJobId, LP)
@@ -3833,195 +3833,91 @@ do
 
         -- Teleport to pet
         pcall(function()
-            root.CFrame = rootPart.CFrame * CFrame.new(0, 5, 0)
+            root.CFrame = rootPart.CFrame + Vector3.new(0, 3, 0)
         end)
-        task.wait(0.8)
+        task.wait(0.4)
 
-        -- Find nearest ProximityPrompt to player after teleport
-        local nearestPrompt = nil
-        local nearestDist = math.huge
-        for _, desc in ipairs(workspace:GetDescendants()) do
-            if desc:IsA("ProximityPrompt") and desc.Enabled then
-                local promptParent = desc.Parent
-                if promptParent and promptParent:IsA("BasePart") then
-                    local dist = (promptParent.Position - root.Position).Magnitude
-                    if dist < nearestDist and dist <= desc.MaxActivationDistance then
-                        nearestDist = dist
-                        nearestPrompt = desc
-                    end
-                end
+        -- Try multiple remotes/methods for pet catch/tame
+        local success = false
+
+        -- Method 1: WildPet.Tame / Capture
+        local ok1 = pcall(function()
+            Net.fire("WildPet.Tame", petInfo.uuid, model)
+        end)
+        if ok1 then success = true end
+
+        -- Method 2: PetShop / WildPet purchase
+        if not success then
+            local ok2 = pcall(function()
+                Net.fire("WildPet.PurchaseWildPet", petInfo.uuid)
+            end)
+            if ok2 then success = true end
+        end
+
+        -- Method 3: ProximityPrompt
+        if not success then
+            local prompt = model:FindFirstChildWhichIsA("ProximityPrompt", true)
+            if prompt then
+                pcall(function()
+                    prompt.HoldDuration = 0
+                    prompt:InputHoldBegin()
+                    task.wait(0.1)
+                    prompt:InputHoldEnd()
+                    success = true
+                end)
             end
         end
 
-        local caught = false
-
-        -- Method 1: Fire nearest ProximityPrompt (primary)
-        if nearestPrompt then
-            local pOk = pcall(function()
-                nearestPrompt.HoldDuration = 0
-                nearestPrompt:InputHoldBegin()
-                task.wait(0.2)
-                nearestPrompt:InputHoldEnd()
-                caught = true
-            end)
-            if caught then
-                print("[GAG Hub] 🐾 ProximityPrompt fired for:", petName, "dist:", math.floor(nearestDist))
-            end
-        end
-
-        -- Method 2: WildPetTame remote (backup)
-        if not caught then
-            local ok1, err1 = pcall(function()
-                Net.fire("Pets.WildPetTame", model)
-            end)
-            if ok1 then
-                caught = true
-                print("[GAG Hub] 🐾 WildPetTame fired for:", petName)
-            else
-                warn("[GAG Hub] WildPetTame error:", err1)
-            end
-        end
-
-        -- Method 3: WildPetCollected (backup)
-        if not caught then
-            pcall(function()
-                Net.fire("Pets.WildPetCollected", model)
-                caught = true
-            end)
-        end
-
-        task.wait(1) -- wait for server to process
+        task.wait(0.2)
 
         -- Return to original position
-        if petCatchConfig.AutoReturn ~= false then
-            task.wait(0.2)
-            pcall(function()
-                root.CFrame = origCFrame
-            end)
-        end
-
-        M._tamed[model] = true
-
-        -- Track stats
-        M._stats.caught += 1
-        local priceStr = Utils.formatNumber and Utils.formatNumber(price) or tostring(price)
-        print("[GAG Hub] 🐾 Caught:", petName, rarity, "¢" .. priceStr)
-        Config.Notify("Pet Caught!", petName .. " (" .. rarity .. ") for ¢" .. priceStr, 8)
-
-        -- Cleanup after pet despawns
-        task.spawn(function()
-            while model and model.Parent do
-                task.wait(1)
-            end
-            M._tamed[model] = nil
+        pcall(function()
+            root.CFrame = origCFrame
         end)
 
-        return true
+        if success then
+            M._tamed[model] = true
+            M._stats.caught += 1
+            print("[TSUO Hub] 🐾 Pet caught/tamed:", petName, "(" .. rarity .. ")")
+            Config.Notify("Pet Caught!", "Caught " .. petName .. " (" .. rarity .. ")!", 8)
+        end
+
+        return success
     end
 
-    function M._scan(petCatchConfig, Net, Utils)
+    function M._scanAndCatch(petCatchConfig, Net, Utils)
         M._stats.scanned += 1
         local LP = Utils.getLocalPlayer()
-        local root = LP and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
-        if not root then return end
+        if not LP or not LP.Character or not LP.Character:FindFirstChild("HumanoidRootPart") then return end
+        local root = LP.Character.HumanoidRootPart
 
-        local petModels = M._getWildPetModels()
-        if #petModels == 0 then return end
-
-        -- Build list with ref data, sort by rarity desc then price asc
-        local candidates = {}
-        for _, pet in ipairs(petModels) do
-            if not M._tamed[pet.model] then
-                local refPart = pet.uuid and M._getRefPart(pet.uuid)
-                local rarity = refPart and refPart:GetAttribute("Rarity") or "Common"
-                local price = refPart and refPart:GetAttribute("Price") or 0
-                local ownerUserId = refPart and refPart:GetAttribute("OwnerUserId") or 0
-                local state = refPart and refPart:GetAttribute("State") or ""
-
-                if ownerUserId == 0 and state == "wandering" then
-                    local petPart = pet.model:FindFirstChild("RootPart") or pet.model:FindFirstChildWhichIsA("BasePart")
-                    local petPos = petPart and petPart.Position or root.Position
-                    table.insert(candidates, {
-                        pet = pet,
-                        rarity = rarity,
-                        price = price,
-                        rarityVal = RARITY_ORDER[rarity] or 0,
-                        dist = (petPos - root.Position).Magnitude,
-                    })
-                end
-            end
-        end
-
-        -- Sort: rarity desc, then price asc (prefer expensive = rare), then distance asc
-        table.sort(candidates, function(a, b)
-            if a.rarityVal ~= b.rarityVal then return a.rarityVal > b.rarityVal end
-            if a.price ~= b.price then return a.price > b.price end
-            return a.dist < b.dist
-        end)
-
-        -- Catch each
-        for _, cand in ipairs(candidates) do
+        local pets = M._getWildPetModels()
+        for _, petInfo in ipairs(pets) do
             if not M._running then break end
-            if M._passesFilter(cand.pet.uuid and M._getRefPart(cand.pet.uuid) or nil, petCatchConfig) then
-                M._catchPet(cand.pet, petCatchConfig, Net, root)
+            if not M._tamed[petInfo.model] then
+                M._catchPet(petInfo, petCatchConfig, Net, root)
                 task.wait(0.5)
             end
         end
-    end
-
-    function M._listenSpawns(petCatchConfig, Net, Utils)
-        local spawnFolder = workspace:FindFirstChild("Map")
-            and workspace.Map:FindFirstChild("WildPetSpawns")
-        if not spawnFolder then return end
-
-        local conn = spawnFolder.ChildAdded:Connect(function(model)
-            if not M._running then return end
-            if not model:IsA("Model") then return end
-
-            -- Wait for attributes to replicate
-            task.wait(1)
-
-            local petName = model:GetAttribute("PetName") or model.Name
-            local uuid = model.Name:match("WildPet_%w+_WildPet_(.+)")
-            local refPart = uuid and M._getRefPart(uuid)
-
-            if refPart and M._passesFilter(refPart, petCatchConfig) then
-                local LP = Utils.getLocalPlayer()
-                local root = LP and LP.Character and LP.Character:FindFirstChild("HumanoidRootPart")
-                if root then
-                    print("[GAG Hub] 🐾 New wild pet spawned:", petName)
-                    M._catchPet({
-                        model = model,
-                        petName = petName,
-                        uuid = uuid,
-                    }, petCatchConfig, Net, root)
-                end
-            end
-        end)
-        table.insert(M._connections, conn)
     end
 
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
 
-        local petCatchConfig = config.PetCatch or {}
         local interval = config.Timings.PetCatchInterval or 3
+        local petCatchConfig = config.PetCatch or {}
 
-        -- Listen for real-time spawns
-        M._listenSpawns(petCatchConfig, Net, Utils)
-
-        -- Periodic scan
         M._thread = task.spawn(function()
             while M._running do
                 pcall(function()
-                    M._scan(petCatchConfig, Net, Utils)
+                    M._scanAndCatch(petCatchConfig, Net, Utils)
                 end)
                 task.wait(interval)
             end
         end)
 
-        print("[GAG Hub] Auto Pet Catch started")
+        print("[TSUO Hub] Auto Pet Catch started")
     end
 
     function M.stop()
@@ -4036,550 +3932,3 @@ do
         return M._stats
     end
 end
-
----------------------------------------------------------------
--- MODULE: AUTO CENTER PLOT
--- Periodically teleport player to center of their garden plot
----------------------------------------------------------------
-
-Modules.AutoCenterPlot = {}
-do
-    local M = Modules.AutoCenterPlot
-    local Center = M
-    Center._running = false
-    Center._thread = nil
-    Center._connections = {}
-
-    function Center.start(config, Net, Utils)
-        if Center._running then return end
-        Center._running = true
-
-        -- One-shot: teleport to soil center on load, then stop
-        task.spawn(function()
-            task.wait(1) -- brief wait for character to load
-            local hrp = Utils.getHumanoidRootPart()
-            local garden = Utils.getMyGarden()
-            if hrp and garden then
-                -- Find center of PlantArea
-                local CollectionService = game:GetService("CollectionService")
-                local totalPos = Vector3.new(0, 0, 0)
-                local count = 0
-                for _, part in ipairs(CollectionService:GetTagged("PlantArea")) do
-                    if part:IsA("BasePart") and part:IsDescendantOf(garden) then
-                        totalPos = totalPos + part.Position
-                        count = count + 1
-                    end
-                end
-                if count > 0 then
-                    local center = totalPos / count
-                    pcall(function()
-                        hrp.CFrame = CFrame.new(center + Vector3.new(0, 3, 0))
-                    end)
-                    print("[GAG Hub] Centered to soil")
-                end
-            end
-            Center._running = false
-        end)
-    end
-
-    function Center.stop()
-        Center._running = false
-        for _, conn in ipairs(Center._connections) do
-            pcall(function() conn:Disconnect() end)
-        end
-        Center._connections = {}
-    end
-end
-
----------------------------------------------------------------
--- STATUS
----------------------------------------------------------------
-
-local function getFullStatus()
-    local lines = {"GAG HUB STATUS", "Sheckles: " .. Utils.formatNumber(Utils.getSheckles()), ""}
-    for name, mod in pairs(Modules) do
-        local st = Running[name] and "ON" or "OFF"
-        local info = ""
-        if name == "RestockSniper" then
-            local t = Config.Restock.TargetSeeds or {}
-            info = #t > 0 and table.concat(t, ", ") or "(none)"
-        elseif name == "GearBuyer" then
-            local t = Config.Gear.TargetGears or {}
-            info = #t > 0 and table.concat(t, ", ") or "(none)"
-        elseif name == "AutoPlant" then
-            info = (Config.Plant.PlantOrder or "Top") .. " | " .. (Config.Plant.PreferSeed or "any")
-        elseif name == "AutoBuyPet" then
-            info = "min: " .. (Config.Pet.MinRarity or "Rare")
-        elseif name == "MutationTracker" then
-            info = "min: " .. (Config.Mutation.MinRarity or "Common")
-        elseif name == "AutoSell" then
-            info = Config.Sell.AutoSell and "auto" or "manual"
-        elseif name == "AutoWater" then
-            info = Config.Water.WaterAll and "all" or "dry only"
-        elseif name == "StealBot" then
-            info = Config.Steal.Enabled and "night mode" or "off"
-        end
-        lines[#lines+1] = "  " .. st .. " " .. name .. ": " .. info
-    end
-    return table.concat(lines, "\n")
-end
-
----------------------------------------------------------------
--- LIVE STATS TRACKER
----------------------------------------------------------------
-
-local Stats = {
-    startSheckles = 0,
-    startTime = os.clock(),
-    sessionHarvested = 0,
-    sessionPlanted = 0,
-    sessionSold = 0,
-    sessionBought = 0,
-}
-
--- Capture initial state on load
-function Stats.init()
-    Stats.startSheckles = Utils.getSheckles()
-    Stats.startTime = os.clock()
-end
-
--- Get elapsed time since start
-function Stats.getElapsed()
-    return os.clock() - Stats.startTime
-end
-
--- Calculate profit/loss since start
-function Stats.getProfit()
-    return Utils.getSheckles() - Stats.startSheckles
-end
-
--- Count plants in my garden
-function Stats.getPlantCount()
-    local garden = Utils.getMyGarden()
-    if not garden then return 0 end
-    local plants = garden:FindFirstChild("Plants")
-    return plants and #plants:GetChildren() or 0
-end
-
--- Calculate approximate garden value (all fruits on all plants)
--- Uses SellValueData * size^2.65 as base estimate
-function Stats.getGardenValue()
-    local garden = Utils.getMyGarden()
-    if not garden then return 0 end
-    local total = 0
-    local plants = garden:FindFirstChild("Plants")
-    if not plants then return 0 end
-    for _, plantModel in ipairs(plants:GetChildren()) do
-        local seedName = plantModel:GetAttribute("SeedName")
-        if not seedName then continue end
-        local fruitsFolder = plantModel:FindFirstChild("Fruits")
-        if fruitsFolder then
-            for _, fruitModel in ipairs(fruitsFolder:GetChildren()) do
-                local size = fruitModel:GetAttribute("SizeMultiplier") or 1
-                local mutation = fruitModel:GetAttribute("Mutation")
-                local baseVal = Stats._sellData[seedName] or 0
-                local sizeMult = size ^ 2.65
-                local mutMult = 1
-                if mutation and Stats._mutData and Stats._mutData[mutation] then
-                    mutMult = Stats._mutData[mutation].PriceMultiplier or 1
-                end
-                total += math.floor(baseVal * sizeMult * mutMult)
-            end
-        else
-            -- Single-harvest: plant itself has value
-            local size = plantModel:GetAttribute("SizeMultiplier") or 1
-            local baseVal = Stats._sellData[seedName] or 0
-            total += math.floor(baseVal * (size ^ 2.65))
-        end
-    end
-    return total
-end
-
--- Count backpack items and estimate seed value
-function Stats.getBackpackInfo()
-    local lp = Players and Players.LocalPlayer
-    local bp = lp and lp:FindFirstChild("Backpack")
-    if not bp then return 0, 0, 0 end
-    local totalItems = 0
-    local seedCount = 0
-    local fruitCount = 0
-    for _, tool in ipairs(bp:GetChildren()) do
-        if tool:IsA("Tool") then
-            totalItems += 1
-            if tool:GetAttribute("SeedTool") then
-                seedCount += 1
-            elseif tool:GetAttribute("FruitName") or tool:GetAttribute("IsFruit") then
-                fruitCount += 1
-            end
-        end
-    end
-    return totalItems, seedCount, fruitCount
-end
-
--- Count active modules
-function Stats.getActiveModules()
-    local count = 0
-    local names = {}
-    for name, active in pairs(Running) do
-        if active then
-            count += 1
-            table.insert(names, name)
-        end
-    end
-    return count, names
-end
-
--- Build full live stats text for Status tab
-function Stats.buildText()
-    local sheckles = Utils.getSheckles()
-    local profit = Stats.getProfit()
-    local elapsed = Stats.getElapsed()
-    local gardenVal = Stats.getGardenValue()
-    local plantCount = Stats.getPlantCount()
-    local totalItems, seedCount, fruitCount = Stats.getBackpackInfo()
-    local activeCount, activeNames = Stats.getActiveModules()
-
-    local profitSign = profit >= 0 and "+" or ""
-    local profitColor = profit >= 0 and "🟢" or "🔴"
-
-    local lines = {}
-
-    -- Money section
-    table.insert(lines, "💰 **Money**")
-    table.insert(lines, string.format("  Current: %s", Utils.formatNumber(sheckles)))
-    table.insert(lines, string.format("  Start:   %s", Utils.formatNumber(Stats.startSheckles)))
-    table.insert(lines, string.format("  Profit:  %s%s%s", profitColor, profitSign, Utils.formatNumber(profit)))
-    table.insert(lines, "")
-
-    -- Session
-    table.insert(lines, "⏱ **Session**")
-    table.insert(lines, string.format("  Runtime: %s", Utils.formatTime(elapsed)))
-    table.insert(lines, "")
-
-    -- Garden
-    table.insert(lines, "🌱 **Garden**")
-    table.insert(lines, string.format("  Plants: %d", plantCount))
-    table.insert(lines, string.format("  Value:  %s", Utils.formatNumber(gardenVal)))
-    table.insert(lines, "")
-
-    -- Backpack
-    table.insert(lines, "🎒 **Backpack**")
-    table.insert(lines, string.format("  Items: %d  (Seeds: %d, Fruits: %d)", totalItems, seedCount, fruitCount))
-    table.insert(lines, "")
-
-    -- Module configs
-    table.insert(lines, string.format("⚡ **Modules** (%d active)", activeCount))
-    for name, mod in pairs(Modules) do
-        local st = Running[name] and "✅" or "⬜"
-        local info = ""
-        if name == "RestockSniper" then
-            local t = Config.Restock.TargetSeeds or {}
-            info = #t > 0 and table.concat(t, ", ") or "(none)"
-        elseif name == "GearBuyer" then
-            local t = Config.Gear.TargetGears or {}
-            info = #t > 0 and table.concat(t, ", ") or "(none)"
-        elseif name == "AutoPlant" then
-            info = (Config.Plant.PlantOrder or "Top") .. " | " .. (Config.Plant.PreferSeed or "any")
-        elseif name == "AutoBuyPet" then
-            info = "min: " .. (Config.Pet.MinRarity or "Rare")
-        elseif name == "MutationTracker" then
-            info = "min: " .. (Config.Mutation.MinRarity or "Common")
-        elseif name == "AutoSell" then
-            info = Config.Sell.AutoSell and "auto" or "manual"
-        elseif name == "AutoWater" then
-            info = Config.Water.WaterAll and "all" or "dry only"
-        elseif name == "StealBot" then
-            info = Config.Steal.Enabled and "night mode" or "off"
-        end
-        table.insert(lines, string.format("  %s %s: %s", st, name, info))
-    end
-
-    return table.concat(lines, "\n")
-end
-
--- SellValueData cache (loaded lazily)
-Stats._sellData = {}
-Stats._mutData = {}
-task.spawn(function()
-    pcall(function()
-        local RS = game:GetService("ReplicatedStorage")
-        local shared = RS:WaitForChild("SharedModules", 10)
-        if shared then
-            local svd = shared:WaitForChild("SellValueData", 5)
-            if svd then Stats._sellData = require(svd) end
-            local md = shared:WaitForChild("MutationData", 5)
-            if md then Stats._mutData = require(md) end
-        end
-    end)
-end)
-
----------------------------------------------------------------
--- RAYFIELD UI
----------------------------------------------------------------
-
-local AllSeeds = Resources.AllSeeds or {
-    "Strawberry","Carrot","Blueberry","Tomato","Green Bean",
-    "Apple","Pineapple","Corn","Banana","Cactus","Grape",
-    "Coconut","Tulip","Baby Cactus","Mango","Pinetree",
-    "Thorn Rose","Dragon Fruit","Acorn","Horned Melon",
-    "Pumpkin","Cherry","Glow Mushroom","Bamboo",
-    "Pomegranate","Poison Apple","Romanesco","Poison Ivy",
-    "Sunflower","Beanstalk","Ghost Pepper","Venus Fly Trap",
-    "Dragon's Breath","Lotus","Moon Bloom","Mushroom",
-}
-
-local AllGears = Resources.AllGears or {
-    "Trowel","Speed Mushroom","Jump Mushroom","Common Watering Can",
-    "Common Sprinkler","Sign","Shrink Mushroom","Supersize Mushroom",
-    "Flashbang","Uncommon Sprinkler","Lantern","Teleporter",
-    "Rare Sprinkler","Gnome","Basic Pot","Legendary Sprinkler",
-    "Super Watering Can","Super Sprinkler","Wheelbarrow",
-}
-
-local function createUI()
-    local Rayfield = nil
-    local ok = pcall(function()
-        Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
-    end)
-    if not ok or not Rayfield then warn("[GAG Hub] Rayfield failed") return false end
-
-    -- Init live stats tracker (capture starting money)
-    Stats.init()
-
-    local Window = Rayfield:CreateWindow({
-        Name = "🌿 " .. Config.UI.Title .. " v" .. VERSION,
-        LoadingTitle = Config.UI.Title .. " v" .. VERSION,
-        LoadingSubtitle = "by Brave",
-        ConfigurationSaving = { Enabled = true, FolderName = "GAGHub", FileName = "config" },
-        Discord = { Enabled = false }, KeySystem = false,
-    })
-
-    -------------------------------------------------------
-    -- TAB 1: FARMING (harvest + sell + water + plant)
-    -------------------------------------------------------
-    local FarmTab = Window:CreateTab("Farming", 6034510) -- leaf icon
-
-    FarmTab:CreateSection("⚡ Auto Modules")
-    for _, e in ipairs({
-        {"Auto Harvest",   "AutoHarvest"},
-        {"Auto Sell",      "AutoSell"},
-        {"Auto Water",     "AutoWater"},
-        {"Auto Plant",     "AutoPlant"},
-    }) do
-        FarmTab:CreateToggle({
-            Name = e[1], CurrentValue = false, Flag = e[2],
-            Callback = function(v) if v then startModule(e[2]) else stopModule(e[2]) end end
-        })
-    end
-
-    FarmTab:CreateSection("⏱ Intervals")
-    FarmTab:CreateSlider({Name="Harvest", Range={0.5,10}, Increment=0.5, Suffix="s", CurrentValue=Config.Timings.HarvestInterval, Flag="HarvestInterval", Callback=function(v) Config.Timings.HarvestInterval=v end})
-    FarmTab:CreateSlider({Name="Sell", Range={1,30}, Increment=1, Suffix="s", CurrentValue=Config.Timings.SellInterval, Flag="SellInterval", Callback=function(v) Config.Timings.SellInterval=v end})
-    FarmTab:CreateSlider({Name="Water", Range={1,15}, Increment=1, Suffix="s", CurrentValue=Config.Timings.WaterInterval, Flag="WaterInterval", Callback=function(v) Config.Timings.WaterInterval=v end})
-    FarmTab:CreateSlider({Name="Plant", Range={1,15}, Increment=1, Suffix="s", CurrentValue=Config.Timings.PlantInterval, Flag="PlantInterval", Callback=function(v) Config.Timings.PlantInterval=v end})
-
-    FarmTab:CreateSection("💧 Water Config")
-    FarmTab:CreateToggle({Name="Water Fully Grown", CurrentValue=false, Flag="WaterFullyGrown", Callback=function(v) Config.Water.WaterFullyGrown=v end})
-    FarmTab:CreateDropdown({Name="Required Can (empty=any)", Options={"","Common Watering Can","Super Watering Can"}, CurrentOption=Config.Water.RequiredCan, Flag="RequiredCan", Callback=function(v) Config.Water.RequiredCan=v end})
-
-    FarmTab:CreateSection("🌱 Plant Config")
-    FarmTab:CreateDropdown({Name="Plant Order", Options={"Top","Bottom","Random"}, CurrentOption=Config.Plant.PlantOrder, Flag="PlantOrder", Callback=function(v) Config.Plant.PlantOrder=v end})
-    FarmTab:CreateSlider({Name="Grid Spacing", Range={2,8}, Increment=0.5, Suffix=" studs", CurrentValue=Config.Plant.GridSpacing, Flag="GridSpacing", Callback=function(v) Config.Plant.GridSpacing=v end})
-    FarmTab:CreateInput({Name="Prefer Seed (empty=any)", PlaceholderText="e.g. Carrot", RemoveTextAfterFocusLost=false, Flag="PreferSeed", Callback=function(v) Config.Plant.PreferSeed = (v~="" and v or nil) end})
-    FarmTab:CreateToggle({Name="Skip Mutated Seeds", CurrentValue=Config.Plant.BlacklistMutated, Flag="BlacklistMutated", Callback=function(v) Config.Plant.BlacklistMutated=v end})
-
-    -------------------------------------------------------
-    -- TAB 2: SHOP & PETS (restock + inventory + pets)
-    -------------------------------------------------------
-    local ShopTab = Window:CreateTab("Shop", 6031790) -- shopping-cart icon
-
-    ShopTab:CreateSection("🎯 Restock Sniper")
-    ShopTab:CreateToggle({Name="Enabled", CurrentValue=false, Flag="RestockSniper", Callback=function(v) if v then startModule("RestockSniper") else stopModule("RestockSniper") end end})
-    ShopTab:CreateSlider({Name="Poll", Range={0.5,5}, Increment=0.5, Suffix="s", CurrentValue=Config.Timings.RestockPollInterval, Flag="RestockPollInterval", Callback=function(v) Config.Timings.RestockPollInterval=v end})
-    ShopTab:CreateDropdown({Name="Buy Targets", Options=AllSeeds, CurrentOption=Config.Restock.TargetSeeds, MultipleOptions=true, Flag="RestockTargets", Callback=function(opts) Config.Restock.TargetSeeds=opts end})
-    ShopTab:CreateDropdown({Name="Blacklist", Options=AllSeeds, CurrentOption=Config.Restock.BlacklistedSeeds, MultipleOptions=true, Flag="RestockBlacklist", Callback=function(opts) Config.Restock.BlacklistedSeeds=opts end})
-
-    ShopTab:CreateSection("🔧 Auto Buy Gear")
-    ShopTab:CreateToggle({Name="Enabled", CurrentValue=false, Flag="GearBuyer", Callback=function(v) if v then startModule("GearBuyer") else stopModule("GearBuyer") end end})
-    ShopTab:CreateSlider({Name="Poll Interval", Range={1,10}, Increment=1, Suffix="s", CurrentValue=5, Flag="GearPollInterval", Callback=function(v) Config.Gear.PollInterval=v end})
-    ShopTab:CreateDropdown({Name="Buy Gears", Options=AllGears, CurrentOption=Config.Gear.TargetGears, MultipleOptions=true, Flag="GearTargets", Callback=function(opts) Config.Gear.TargetGears=opts end})
-
-    ShopTab:CreateSection("📦 Inventory")
-    ShopTab:CreateToggle({Name="Optimizer", CurrentValue=false, Flag="InventoryOptimizer", Callback=function(v) if v then startModule("InventoryOptimizer") else stopModule("InventoryOptimizer") end end})
-    ShopTab:CreateSlider({Name="Check", Range={5,60}, Increment=5, Suffix="s", CurrentValue=Config.Timings.InventoryCheckInterval, Flag="InventoryCheckInterval", Callback=function(v) Config.Timings.InventoryCheckInterval=v end})
-
-    ShopTab:CreateSection("🐾 Pets")
-    ShopTab:CreateToggle({Name="Auto Hatch", CurrentValue=false, Flag="AutoBuyPet", Callback=function(v) if v then startModule("AutoBuyPet") else stopModule("AutoBuyPet") end end})
-    ShopTab:CreateSlider({Name="Hatch", Range={1,10}, Increment=0.5, Suffix="s", CurrentValue=Config.Timings.PetHatchInterval, Flag="PetHatchInterval", Callback=function(v) Config.Timings.PetHatchInterval=v end})
-    ShopTab:CreateDropdown({Name="Min Rarity", Options={"Common","Uncommon","Rare","Legendary","Mythic","Super"}, CurrentOption={Config.Pet.MinRarity}, MultipleOptions=false, Flag="PetMinRarity", Callback=function(opt) Config.Pet.MinRarity=type(opt)=="table" and opt[1] or opt end})
-    ShopTab:CreateToggle({Name="Sell Unwanted", CurrentValue=Config.Pet.AutoSellUnwanted, Flag="PetAutoSell", Callback=function(v) Config.Pet.AutoSellUnwanted=v end})
-
-    -------------------------------------------------------
-    -- TAB 3: EVENTS (mutations + weather + steal)
-    -------------------------------------------------------
-    local EventTab = Window:CreateTab("Events", 6035974) -- zap icon
-
-    EventTab:CreateSection("🧬 Mutations")
-    EventTab:CreateToggle({Name="Tracker", CurrentValue=false, Flag="MutationTracker", Callback=function(v) if v then startModule("MutationTracker") else stopModule("MutationTracker") end end})
-    EventTab:CreateSlider({Name="Scan", Range={1,10}, Increment=1, Suffix="s", CurrentValue=Config.Timings.MutationScanInterval, Flag="MutationScanInterval", Callback=function(v) Config.Timings.MutationScanInterval=v end})
-
-    EventTab:CreateSection("🌧 Weather")
-    EventTab:CreateToggle({Name="Weather Bot", CurrentValue=false, Flag="WeatherBot", Callback=function(v) if v then startModule("WeatherBot") else stopModule("WeatherBot") end end})
-    EventTab:CreateSlider({Name="Poll", Range={1,15}, Increment=1, Suffix="s", CurrentValue=Config.Timings.WeatherPollInterval, Flag="WeatherPollInterval", Callback=function(v) Config.Timings.WeatherPollInterval=v end})
-
-    EventTab:CreateSection("🌱 Seed Pack Claimer")
-    EventTab:CreateToggle({Name="Auto Claim", CurrentValue=false, Flag="SeedPackClaimer", Callback=function(v) if v then startModule("SeedPackClaimer") else stopModule("SeedPackClaimer") end end})
-    EventTab:CreateSlider({Name="Poll", Range={0.1,5}, Increment=0.1, Suffix="s", CurrentValue=Config.Timings.SeedPackPollInterval, Flag="SeedPackPollInterval", Callback=function(v) Config.Timings.SeedPackPollInterval=v end})
-
-    EventTab:CreateSection("🐾 Wild Pet Catch")
-    EventTab:CreateToggle({Name="Auto Catch", CurrentValue=false, Flag="AutoPetCatch", Callback=function(v) if v then startModule("AutoPetCatch") else stopModule("AutoPetCatch") end end})
-    EventTab:CreateSlider({Name="Scan", Range={1,15}, Increment=1, Suffix="s", CurrentValue=Config.Timings.PetCatchInterval, Flag="PetCatchInterval", Callback=function(v) Config.Timings.PetCatchInterval=v end})
-    EventTab:CreateDropdown({Name="Min Rarity", Options={"Common","Uncommon","Rare","Legendary","Mythic","Super"}, CurrentOption={Config.PetCatch.MinRarity}, MultipleOptions=false, Flag="PetCatchMinRarity", Callback=function(opt) Config.PetCatch.MinRarity=type(opt)=="table" and opt[1] or opt end})
-    EventTab:CreateToggle({Name="Return After Catch", CurrentValue=Config.PetCatch.AutoReturn, Flag="PetCatchAutoReturn", Callback=function(v) Config.PetCatch.AutoReturn=v end})
-
-    EventTab:CreateSection("🌙 Steal Bot")
-    EventTab:CreateToggle({Name="Enabled (Night)", CurrentValue=false, Flag="StealBot", Callback=function(v) if v then startModule("StealBot") else stopModule("StealBot") end end})
-    EventTab:CreateSlider({Name="Interval", Range={0.5,5}, Increment=0.5, Suffix="s", CurrentValue=Config.Timings.StealInterval, Flag="StealInterval", Callback=function(v) Config.Timings.StealInterval=v end})
-    EventTab:CreateSlider({Name="Max/Night", Range={5,100}, Increment=5, Suffix="", CurrentValue=Config.Steal.MaxAttemptsPerNight, Flag="MaxStealAttempts", Callback=function(v) Config.Steal.MaxAttemptsPerNight=v end})
-    EventTab:CreateSlider({Name="Min Value", Range={100,10000}, Increment=100, Suffix=" $", CurrentValue=Config.Steal.MinFruitValue, Flag="MinFruitValue", Callback=function(v) Config.Steal.MinFruitValue=v end})
-
-    EventTab:CreateSection("🏡 Auto Center Plot")
-    EventTab:CreateToggle({Name="Enabled (on load)", CurrentValue=false, Flag="AutoCenterPlot", Callback=function(v) if v then startModule("AutoCenterPlot") else stopModule("AutoCenterPlot") end end})
-
-    -------------------------------------------------------
-    -- TAB: SERVER (auto join / boost)
-    -------------------------------------------------------
-    local ServerTab = Window:CreateTab("Server", 6035172) -- globe icon
-
-    ServerTab:CreateSection("📡 Current Server")
-    local CurrentJobParagraph = ServerTab:CreateParagraph({
-        Title = "Your JobId",
-        Content = game.JobId ~= "" and game.JobId or "N/A (studio)"
-    })
-    ServerTab:CreateButton({Name="📋 Copy JobId", Callback=function()
-        if setclipboard then
-            setclipboard(game.JobId)
-            Rayfield:Notify({Title="Copied!", Content="JobId copied to clipboard", Duration=3})
-        else
-            Rayfield:Notify({Title="JobId", Content=game.JobId, Duration=10})
-        end
-    end})
-
-    ServerTab:CreateSection("🚀 Join Target Server")
-    ServerTab:CreateInput({
-        Name = "Target JobId",
-        PlaceholderText = "Paste server JobId here...",
-        RemoveTextAfterFocusLost = false,
-        Flag = "TargetJobId",
-        Callback = function(v)
-            Config.Server.TargetJobId = v
-        end
-    })
-    ServerTab:CreateToggle({
-        Name = "Auto Join Server",
-        CurrentValue = false,
-        Flag = "AutoJoinServer",
-        Callback = function(v)
-            if v then
-                if Config.Server.TargetJobId == "" then
-                    Rayfield:Notify({Title="Error", Content="Set Target JobId first!", Duration=5})
-                    return
-                end
-                startModule("AutoJoinServer")
-            else
-                stopModule("AutoJoinServer")
-            end
-        end
-    })
-    ServerTab:CreateToggle({Name="Auto Rejoin on Disconnect", CurrentValue=Config.Server.AutoRejoin, Flag="ServerAutoRejoin", Callback=function(v) Config.Server.AutoRejoin=v end})
-    ServerTab:CreateSlider({Name="Rejoin Delay", Range={3,30}, Increment=1, Suffix="s", CurrentValue=Config.Server.RejoinDelay, Flag="ServerRejoinDelay", Callback=function(v) Config.Server.RejoinDelay=v end})
-    ServerTab:CreateSlider({Name="Max Retries", Range={1,50}, Increment=1, Suffix="", CurrentValue=Config.Server.MaxRetries, Flag="ServerMaxRetries", Callback=function(v) Config.Server.MaxRetries=v end})
-
-    -- Quick join: paste JobId + 1-click
-    ServerTab:CreateSection("⚡ Quick Join")
-    ServerTab:CreateButton({Name="🔄 Join Now (use input above)", Callback=function()
-        if Config.Server.TargetJobId == "" then
-            Rayfield:Notify({Title="Error", Content="Set Target JobId first!", Duration=5})
-            return
-        end
-        print("[GAG Hub] Quick join →", Config.Server.TargetJobId)
-        local LP = game:GetService("Players").LocalPlayer
-        pcall(function()
-            game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, Config.Server.TargetJobId, LP)
-        end)
-    end})
-
-    -------------------------------------------------------
-    -- TAB 4: LIVE STATUS
-    -------------------------------------------------------
-    local StatusTab = Window:CreateTab("Status", 6030690) -- activity icon
-
-    StatusTab:CreateSection("📊 Live Stats (auto-refresh)")
-
-    local StatsParagraph = StatusTab:CreateParagraph({
-        Title = "Session Overview",
-        Content = "Loading stats..."
-    })
-
-    StatusTab:CreateSection("🎮 Controls")
-    StatusTab:CreateButton({Name="✅ Enable All", Callback=function()
-        for n in pairs(Modules) do startModule(n) end
-        Rayfield:Notify({Title="GAG Hub",Content="All modules enabled",Duration=3})
-    end})
-    StatusTab:CreateButton({Name="❌ Disable All", Callback=function()
-        for n in pairs(Modules) do stopModule(n) end
-        Rayfield:Notify({Title="GAG Hub",Content="All modules disabled",Duration=3})
-    end})
-
-    -- Live update loop (every 2 seconds)
-    task.spawn(function()
-        while true do
-            pcall(function()
-                StatsParagraph:Set({Title="Session Overview", Content=Stats.buildText()})
-            end)
-            task.wait(2)
-        end
-    end)
-
-    pcall(function() Rayfield:LoadConfiguration() end)
-    return true
-end
-
----------------------------------------------------------------
--- CONSOLE API
----------------------------------------------------------------
-
-_G.GAGHub = {
-    Config = Config, Modules = Modules, Net = Networking, Utils = Utils,
-    toggle = function(name) toggleModule(name) print("[GAG Hub] " .. name .. ": " .. (Running[name] and "ON" or "OFF")) end,
-    start = startModule, stop = stopModule,
-    status = function() print(getFullStatus()) end,
-    enableAll = function() for n in pairs(Modules) do startModule(n) end end,
-    disableAll = function() for n in pairs(Modules) do stopModule(n) end end,
-    stats = function(name) if Modules[name] and Modules[name].getStats then for k,v in pairs(Modules[name].getStats()) do print("  "..k..": "..tostring(v)) end end end,
-}
-
----------------------------------------------------------------
--- STARTUP
----------------------------------------------------------------
-
-local LP = Utils.getLocalPlayer()
-
-LP.CharacterAdded:Connect(function()
-    task.wait(3)
-    for name, active in pairs(Running) do
-        if active then task.spawn(function() stopModule(name) task.wait(1) startModule(name) end) end
-    end
-end)
-
-task.spawn(function()
-    local VirtualUser = game:GetService("VirtualUser")
-    LP.Idled:Connect(function()
-        VirtualUser:CaptureController()
-        VirtualUser:ClickButton2(Vector2.new())
-    end)
-end)
-
-task.spawn(createUI)
-Config.Notify("GAG Hub Loaded!", "Toggle in UI or use _G.GAGHub API.", 5)
-print("GAG HUB loaded! Console: _G.GAGHub")

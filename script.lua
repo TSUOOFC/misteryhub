@@ -1,15 +1,15 @@
 -- ===============================================================
--- GAG HUB - SCRIPT COMPLETO (VERSÃO PT-BR)
+-- TSUO HUB - SCRIPT COMPLETO (VERSÃO PT-BR)
 -- Feito para Grow a Garden (Roblox)
 -- ===============================================================
 
-if _G.GAGHubLoaded then
-    warn("[GAG Hub] O Hub já está em execução!")
+if _G.TsuoHubLoaded then
+    warn("[TSUO Hub] O Hub já está em execução!")
     return
 end
-_G.GAGHubLoaded = true
+_G.TsuoHubLoaded = true
 
-local VERSION = "1.0.0"
+local VERSION = "1.2.3"
 
 ---------------------------------------------------------------
 -- CONFIGURAÇÕES GLOBAIS
@@ -17,7 +17,9 @@ local VERSION = "1.0.0"
 
 local Config = {
     UI = {
-        Title = "GAG Hub | Grow a Garden",
+        Title = "TSUO HUB",
+        -- ID do ícone de dragão no Roblox (exemplo de asset válido para ícone)
+        Icon = 6034510, 
     },
     Timings = {
         HarvestInterval = 2,
@@ -261,7 +263,7 @@ do
     end
 
     function Utils.formatNumber(n)
-        if not n return "0" end
+        if not n then return "0" end
         if n >= 1e9 then
             return string.format("%.2fB", n / 1e9)
         elseif n >= 1e6 then
@@ -472,7 +474,6 @@ do
                     if garden then
                         local area = garden:FindFirstChild("PlantArea")
                         if area then
-                            -- Lógica simplificada de plantio automatizado
                             Net.fire("Plants.PlantSeed", "Carrot", area.Position)
                             M._stats.planted += 1
                         end
@@ -590,7 +591,6 @@ do
             while M._running do
                 pcall(function()
                     if Utils.isNight() then
-                        -- Executa lógica de furto se estiver de noite
                         M._stats.stolen += 1
                     end
                 end)
@@ -638,12 +638,7 @@ Modules.InventoryOptimizer = {}
 do
     local M = Modules.InventoryOptimizer
     M._running = false
-
-    function M.start(config, Net, Utils)
-        if M._running then return end
-        M._running = true
-    end
-
+    function M.start(config, Net, Utils) if M._running then return end M._running = true end
     function M.stop() M._running = false end
     function M.getStats() return { optimized = 0 } end
 end
@@ -655,12 +650,7 @@ Modules.GearBuyer = {}
 do
     local M = Modules.GearBuyer
     M._running = false
-
-    function M.start(config, Net, Utils)
-        if M._running then return end
-        M._running = true
-    end
-
+    function M.start(config, Net, Utils) if M._running then return end M._running = true end
     function M.stop() M._running = false end
     function M.getStats() return { bought = 0 } end
 end
@@ -672,12 +662,7 @@ Modules.SeedPackClaimer = {}
 do
     local M = Modules.SeedPackClaimer
     M._running = false
-
-    function M.start(config, Net, Utils)
-        if M._running then return end
-        M._running = true
-    end
-
+    function M.start(config, Net, Utils) if M._running then return end M._running = true end
     function M.stop() M._running = false end
     function M.getStats() return { claimed = 0 } end
 end
@@ -689,7 +674,6 @@ Modules.AutoJoinServer = {}
 do
     local M = Modules.AutoJoinServer
     M._running = false
-
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
@@ -697,7 +681,6 @@ do
             game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, config.Server.TargetJobId, Utils.getLocalPlayer())
         end
     end
-
     function M.stop() M._running = false end
     function M.getStats() return { teleports = 0 } end
 end
@@ -709,12 +692,7 @@ Modules.AutoPetCatch = {}
 do
     local M = Modules.AutoPetCatch
     M._running = false
-
-    function M.start(config, Net, Utils)
-        if M._running then return end
-        M._running = true
-    end
-
+    function M.start(config, Net, Utils) if M._running then return end M._running = true end
     function M.stop() M._running = false end
     function M.getStats() return { caught = 0 } end
 end
@@ -726,7 +704,6 @@ Modules.AutoCenterPlot = {}
 do
     local M = Modules.AutoCenterPlot
     M._running = false
-
     function M.start(config, Net, Utils)
         if M._running then return end
         M._running = true
@@ -739,7 +716,6 @@ do
             M._running = false
         end)
     end
-
     function M.stop() M._running = false end
 end
 
@@ -781,7 +757,7 @@ function Stats.buildText()
 end
 
 ---------------------------------------------------------------
--- INTERFACE GRÁFICA (RAYFIELD UI EM PT-BR)
+-- INTERFACE GRÁFICA (RAYFIELD UI COM ÍCONE DE DRAGÃO E TSUO HUB)
 ---------------------------------------------------------------
 
 local function createUI()
@@ -790,17 +766,17 @@ local function createUI()
         Rayfield = loadstring(game:HttpGet('https://sirius.menu/rayfield'))()
     end)
     if not ok or not Rayfield then
-        warn("[GAG Hub] Falha ao carregar o Rayfield UI!")
+        warn("[TSUO Hub] Falha ao carregar o Rayfield UI!")
         return false
     end
 
     Stats.init()
 
     local Window = Rayfield:CreateWindow({
-        Name = "🌿 " .. Config.UI.Title .. " v" .. VERSION,
-        LoadingTitle = "Carregando GAG Hub...",
-        LoadingSubtitle = "por Brave (Tradução PT-BR)",
-        ConfigurationSaving = { Enabled = true, FolderName = "GAGHub", FileName = "config_pt" },
+        Name = "🐉 " .. Config.UI.Title .. " v" .. VERSION,
+        LoadingTitle = "Carregando Tsuo Hub...",
+        LoadingSubtitle = "por Tsuo (Dragão Edition)",
+        ConfigurationSaving = { Enabled = true, FolderName = "TsuoHub", FileName = "config_tsuo" },
         Discord = { Enabled = false },
         KeySystem = false,
     })
@@ -881,11 +857,11 @@ local function createUI()
     StatusTab:CreateSection("🎮 Painel de Controle Global")
     StatusTab:CreateButton({Name = "✅ Ativar Tudo", Callback = function()
         for n in pairs(Modules) do startModule(n) end
-        Rayfield:Notify({Title = "GAG Hub", Content = "Todos os módulos foram ativados!", Duration = 3})
+        Rayfield:Notify({Title = "TSUO Hub", Content = "Todos os módulos foram ativados!", Duration = 3})
     end})
     StatusTab:CreateButton({Name = "❌ Desativar Tudo", Callback = function()
         for n in pairs(Modules) do stopModule(n) end
-        Rayfield:Notify({Title = "GAG Hub", Content = "Todos os módulos foram desativados!", Duration = 3})
+        Rayfield:Notify({Title = "TSUO Hub", Content = "Todos os módulos foram desativados!", Duration = 3})
     end})
 
     -- Loop de atualização automática das estatísticas
@@ -906,7 +882,7 @@ end
 -- API DO CONSOLE E INICIALIZAÇÃO
 ---------------------------------------------------------------
 
-_G.GAGHub = {
+_G.TsuoHub = {
     Config = Config,
     Modules = Modules,
     Net = Networking,
@@ -931,5 +907,5 @@ end)
 
 -- Inicializa a Interface
 task.spawn(createUI)
-Config.Notify("GAG Hub Carregado!", "Painel totalmente traduzido para PT-BR.", 5)
-print("[GAG Hub] Carregado com sucesso! Use _G.GAGHub no console se necessário.")
+Config.Notify("TSUO Hub Carregado!", "Painel renomeado e traduzido para PT-BR com sucesso!", 5)
+print("[TSUO Hub] Carregado com sucesso! Use _G.TsuoHub no console se necessário.")

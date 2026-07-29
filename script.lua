@@ -1,3 +1,6 @@
+Para usar o script atualizado no jogo, copie **todo** o código da caixa abaixo e cole no seu executor (como Fluxus, Delta, Arceus X, etc.):
+
+```lua
 -- ===============================================================
 -- GAG HUB - SCRIPT COMPLETO (AUTO VENDA FORÇADA)
 -- Feito para Grow a Garden (Roblox)
@@ -21,7 +24,7 @@ local Config = {
     },
     Timings = {
         HarvestInterval = 2,
-        SellInterval = 2, -- Intervalo mais rápido para testar a venda
+        SellInterval = 2,
         WaterInterval = 3,
         PlantInterval = 2,
         RestockPollInterval = 1,
@@ -310,7 +313,7 @@ local function toggleModule(name)
 end
 
 ---------------------------------------------------------------
--- MÓDULO: AUTO HARVEST (Colheita Automática)
+-- MÓDULO: AUTO HARVEST
 ---------------------------------------------------------------
 Modules.AutoHarvest = {}
 do
@@ -390,7 +393,6 @@ do
                                     end
 
                                     if not isGear then
-                                        -- Dispara todas as variações conhecidas de remote de venda no jogo
                                         Net.fire("NPCS.SellItem", tool)
                                         Net.fire("SellItem", tool)
                                         Net.fire("Shop.SellItem", tool)
@@ -414,7 +416,7 @@ do
 end
 
 ---------------------------------------------------------------
--- MÓDULO: AUTO WATER (Rega Automática)
+-- MÓDULO: AUTO WATER
 ---------------------------------------------------------------
 Modules.AutoWater = {}
 do
@@ -451,7 +453,7 @@ do
 end
 
 ---------------------------------------------------------------
--- MÓDULO: AUTO PLANT (Plantio Automático)
+-- MÓDULO: AUTO PLANT
 ---------------------------------------------------------------
 Modules.AutoPlant = {}
 do
@@ -694,7 +696,7 @@ local function createUI()
     Stats.init()
 
     local Window = Rayfield:CreateWindow({
-        Name = "🌿 " .. Config.UI.Title + " v" .. VERSION,
+        Name = "🌿 " .. Config.UI.Title .. " v" .. VERSION,
         LoadingTitle = "Carregando GAG Hub...",
         LoadingSubtitle = "por Brave (Auto Venda Forçada)",
         ConfigurationSaving = { Enabled = true, FolderName = "GAGHub", FileName = "config_pt" },
@@ -816,3 +818,5 @@ end)
 task.spawn(createUI)
 Config.Notify("GAG Hub Carregado!", "Auto Venda forçada e otimizada ativa!", 5)
 print("[GAG Hub] Carregado com sucesso!")
+
+```
